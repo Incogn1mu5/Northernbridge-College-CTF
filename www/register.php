@@ -36,7 +36,7 @@ function generateStudentId(string $firstName, string $lastName): string
 |--------------------------------------------------------------------------
 | Generate Email
 |--------------------------------------------------------------------------
-| Requirement:firstname + lastname + @northenbridge */
+| Requirement:firstname + lastname + @northernbridge */
 function generateEmail(string $firstName, string $lastName): string
 {
     $firstName = strtolower(
@@ -47,7 +47,7 @@ function generateEmail(string $firstName, string $lastName): string
         preg_replace('/[^a-zA-Z0-9]/', '', $lastName)
     );
 
-    return $firstName . $lastName . '@northenbridge.lab';
+    return $firstName . $lastName . '@northernbridge.lab';
 }
 
 
@@ -314,7 +314,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     >
 
     <title>
-        Student Registration — Northenbridge College
+        Student Registration — Northernbridge College
     </title>
 
 
@@ -898,7 +898,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <p>
             Complete the registration form below to enroll at
-            Northenbridge College. Your student credentials
+            Northernbridge College. Your student credentials
             will be generated automatically after registration.
         </p>
 
@@ -1262,7 +1262,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const credentials = [
-            'NORTHENBRIDGE COLLEGE',
+            'NORTHERNBRIDGE COLLEGE',
             'STUDENT LOGIN CREDENTIALS',
             '',
             'Student ID : ' + studentId,
