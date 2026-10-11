@@ -359,7 +359,7 @@ function e($value)
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Edit Marks | Northenbridge College</title>
+    <title>Edit Marks | Northernbridge College</title>
 
     <style>
 
