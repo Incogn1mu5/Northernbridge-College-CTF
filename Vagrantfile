@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
     # ------------------------------------------------------------------------
 
     config.vm.synced_folder ".", "/vagrant", disabled: true
-    config.vm.synced_folder "./www", "/var/www/northenbridge", disabled: true
+    config.vm.synced_folder "./www", "/var/www/northernbridge", disabled: true
   end
 
   # Access the site from other devices on the same LAN (bridged):
