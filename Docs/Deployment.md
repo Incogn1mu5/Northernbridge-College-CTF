@@ -1,8 +1,8 @@
 # Deployment
-Northenbridge College CTF runs inside a Vagrant-managed Ubuntu VM. The VM hosts the complete website and database, so player devices only need a web browser.
+Northernbridge College CTF runs inside a Vagrant-managed Ubuntu VM. The VM hosts the complete website and database, so player devices only need a web browser.
 
 The lab has two deployment mode:
-* Normal mMde (default)
+* Normal Mode (default)
 * Development Mode 
 
 > <h2>1. Normal Mode</h2>
@@ -14,7 +14,7 @@ deploy lab in normal mode:
 vagrant up
 ```
 
-* One script, `infra/provision.sh`, builds the entire CTF: it installs packages, clones the portal application from GitHub into `/var/www/html`, configures Apache, seeds the SQLite database, and places the challenge artifacts (decoy `.env` file and the filesystem final flag).
+* One script, `infra/provision.sh`, builds the entire CTF: it installs packages, clones the portal application from GitHub into `/var/www/html`, configures Apache, seeds the SQLite database, and places the challenge artifacts (decoy `.env` file and the filesystem final `Flag 04`).
 </br>
 
 > <h2>2. Development  Mode</h2>
@@ -26,7 +26,7 @@ Development mode is intended to let you edit your website files on Windows while
 $env:DEV_MODE="1"
 vagrant up
 ```
-* One script, `infra/provision.sh`, builds the entire CTF: it installs packages, syncs `PHP` application files from host `./www` into `/var/www/html`, configures Apache, seeds the SQLite database, and places the challenge artifacts (decoy `.env` file and the filesystem final flag).  
+* One script, `infra/provision.sh`, builds the entire CTF: it installs packages, syncs `PHP` application files from host `./www` into `/var/www/html`, configures Apache, seeds the SQLite database, and places the challenge artifacts (decoy `.env` file and the filesystem final `Flag 04`).  
 </br>
 
 ## Requirements
@@ -48,7 +48,7 @@ From a **clean clone** on any host:
 
 ```bash
 git clone <repository-url>
-cd enbridge-College-CTF
+cd Northernbridge-College-CTF-2.0
 vagrant up
 ```
 
@@ -67,7 +67,7 @@ The portal application is never read from the host at runtime — it is cloned i
 The script is fully declarative. The configuration variables live at the top of the file:
 
 ```bash
-PORTAL_REPO="https://github.com/Incogn1mu5/enbridge-College-CTF.git"  # GitHub URL of the portal source
+PORTAL_REPO="https://github.com/<username>/<Repo-name>.git"  # GitHub URL of the portal source
 PORTAL_BRANCH="main"                                                       # branch / tag to deploy
 PORTAL_SUBDIR="www"                                                        # app directory inside the repo
 PORTAL_SEED="seed.sql"                                                     # seed file inside the repo
@@ -77,9 +77,9 @@ PORTAL_DIR="/var/www/html"                                                 # VM-
 Steps performed:
 
 1. Updates packages and installs `apache2`, `php`, `libapache2-mod-php`, `php-sqlite3`, `sqlite3`, `git`, `curl`, `rsync`.
-2. Clones (or pulls) `PORTAL_REPO` at `PORTAL_BRANCH` into `/opt/northenbridge-src`.
+2. Clones (or pulls) `PORTAL_REPO` at `PORTAL_BRANCH` into `/opt/northernbridge-src`.
 3. Installs the app from `PORTAL_SUBDIR` into `PORTAL_DIR` — the `database/` directory is excluded from the sync.
-4. Enables Apache modules (`rewrite`, `php`), writes the `northenbridge` virtual host pointing at `PORTAL_DIR` with custom `ErrorDocument` directives (`404.html` / `500.html`), disables directory listing, blocks direct `*.db` serving, denies direct access to `PORTAL_DIR/includes`, and applies production PHP settings (display errors off, logging on).
+4. Enables Apache modules (`rewrite`, `php`), writes the `northernbridge` virtual host pointing at `PORTAL_DIR` with custom `ErrorDocument` directives (`404.html` / `500.html`), disables directory listing, blocks direct `*.db` serving, denies direct access to `PORTAL_DIR/includes`, and applies production PHP settings (display errors off, logging on).
    The app's `.htaccess` (deployed with the portal) maps `/profile` and `/marks` to their `.php` pages (so unauthenticated requests there redirect to login) and funnels unknown routes through the branded 404 page.
 
 The same variables can be overridden from the host shell before `vagrant provision`, which is how a lab operator deploys a custom portal fork (for example a local git-over-HTTP mirror) without editing the script:
@@ -89,7 +89,7 @@ $env:PORTAL_REPO = "http://10.0.2.2:9418/mirror"
 vagrant provision
 ```
 5. Places the decoy credential file (`PORTAL_DIR/.env`) used by the password-spray stage.
-6. Places the final flag on the filesystem at `/opt/northenbridge/flag.txt` (outside the database); the legacy `flag-final.txt` path is removed.
+6. Places the final `Flag 04` on the filesystem at `/opt/northernbridge/flag.txt` (outside the database); the legacy `flag-final.txt` path is removed.
 7. **Idempotently** initializes the SQLite database from `PORTAL_SEED`. The seed is re-applied on every provision using `CREATE IF NOT EXISTS` / `INSERT OR IGNORE` (plus a small migration block), so existing player rows are never overwritten.
 8. Sets permissions (`www-data`), restarts Apache and verifies the site answers HTTP 200 on `127.0.0.1:80`.  
 </br>
@@ -110,13 +110,13 @@ The VM listens on two interfaces:
 
 | Interface | Purpose | Access |
 |---|---|---|
-| `127.0.0.1:8080` (host-forwarded) | Host browser | `http://localhost:8080/` |
-| Bridged LAN IP | Player devices on the same network | `http://<VM-IP>/` |
+| NAT IP (inter-lab communication)| Both Testing and Target machine inside VirtualBox| `http://vm-NAT-IP/` |
+| Bridged LAN IP | Player devices on the same network | `http://vm-Bridged-IP/` |
 </br>
 
 ## Apache
 
-Apache listens on port `80` inside the VM. The project uses the `northenbridge` Apache virtual host and serves the application from:
+Apache listens on port `80` inside the VM. The project uses the `northernbridge` Apache virtual host and serves the application from:
 
 ```text
 /var/www/html
@@ -130,9 +130,9 @@ The student portal and admin portal are hosted by the same Apache instance.
 Once the VM is running, test the website from the host first:
 
 ```text
-http://localhost:8080/
+http://vm-NAT-IP/
 OR
-http://<VM-IP>/
+http://vm-Bridged-IP>/
 ```
 
 Then test the same address from another device connected to the same network.
@@ -145,7 +145,7 @@ If a second device cannot connect, check:
 * Apache is running.
 * Port `80` is not being blocked by the host or VM firewall.
 
-The `northenbridge.local` Apache `ServerName` does not automatically create DNS for player devices, so using the VM's IP address is the simplest option for the CTF.  
+The `northernbridge.local` Apache `ServerName` does not automatically create DNS for player devices, so using the VM's IP address is the simplest option for the CTF.  
 </br>
 
 ## Challenge Artifacts
@@ -154,9 +154,9 @@ Deployed by the provisioning script, never committed to the repository:
 
 | Artifact | Location | Purpose |
 |---|---|---|
-| SQLite database | `/var/lib/northenbridge/college.db` | application data, built from `seed.sql` |
+| SQLite database | `/var/lib/northernbridge/college.db` | application data, built from `seed.sql` |
 | Decoy credential file | `/var/www/html/.env` | candidate admin passwords for the spray stage |
-| Final flag | `/opt/northenbridge/flag.txt` | filesystem flag — **not** in the database |
+| Final `Flag 04` | `/opt/northernbridge/flag.txt` | filesystem flag — **not** in the database |
 </br>
 
 ## Resetting the Lab
@@ -212,12 +212,12 @@ Note that the repository no longer relies on shared folders: `vagrant destroy` r
 
 ## Troubleshooting
 
-**`vagrant up` fails with `Could not rename the directory '...' to '...\northenbridge-ctf' ... (VERR_ALREADY_EXISTS)`** (Windows/VirtualBox).
+**`vagrant up` fails with `Could not rename the directory '...' to '...\Northernbridge-College-CTF-v2' ... (VERR_ALREADY_EXISTS)`** (Windows/VirtualBox).
 
-This happens when a previous `vagrant destroy` leaves a stale `northenbridge-ctf` folder behind (usually containing only `Logs/`). VirtualBox refuses to rename a fresh box import over it. Fix on the host:
+This happens when a previous `vagrant destroy` leaves a stale `Northernbridge-College-CTF-v2` folder behind (usually containing only `Logs/`). VirtualBox refuses to rename a fresh box import over it. Fix on the host:
 
 ```powershell
-Remove-Item -LiteralPath "C:\Users\Dell\VirtualBox VMs\northenbridge-ctf" -Recurse -Force
+Remove-Item -LiteralPath "C:\Users\Dell\VirtualBox VMs\Northernbridge-College-CTF-v2" -Recurse -Force
 vagrant up
 ```
 
@@ -232,7 +232,7 @@ VBoxManage unregistervm "ubuntu-jammy-22.04-cloudimg-*" --delete
 * **step 1**: Open VirtualBox → Preferences → General → Default Machine Folder
 * **Step 02**: visit the path displayed in `Default Machine Folder` in file explorer.
 * **step 03**: select duplicate machines → delete
-* **step 04**: Inside cloned repo folder eg: `C:\Users\user\Downloads\Nothrenbridge-College-CTF\` you may find `.vagrant` folder → select `.vagrant` → delete
+* **step 04**: Inside cloned repo folder eg: `C:\Users\user\Downloads\Northernbridge-College-CTF-2.0\` you may find `.vagrant` folder → select `.vagrant` → delete
 
 **First `vagrant up` reports an SSH boot timeout but the VM keeps running.**
 
