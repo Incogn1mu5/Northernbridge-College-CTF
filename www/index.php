@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------
-// Northenbridge College — Home Page
+// Northernbridge College — Home Page
 // ---------------------------------------------------------
 
 require_once __DIR__ . '/includes/init.php';
@@ -45,7 +45,7 @@ $year = date("Y");
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Northenbridge College</title>
+<title>Northernbridge College</title>
 <style>
     :root {
         --ink:        #1c2a24;
@@ -440,7 +440,7 @@ $year = date("Y");
     <div class="hero-inner">
         <div>
             <div class="hero-motto sans">ESTABLISHED IN PURPOSE, BUILT ON RIGOR</div>
-            <h1>Northenbridge College</h1>
+            <h1>Northernbridge College</h1>
             <p class="lede">A small college with a clear focus: close mentorship, disciplined coursework, and a campus where every student is known by name.</p>
         </div>
         <div class="hero-panel">
