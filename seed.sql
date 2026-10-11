@@ -1,7 +1,7 @@
 PRAGMA foreign_keys = ON;
 
 -- ============================================================
--- Northbridge College CTF — seed data
+-- Northenbridge College CTF — seed data
 -- Idempotent: safe to run many times (CREATE IF NOT EXISTS +
 -- INSERT OR IGNORE). Existing player data is never destroyed.
 -- ============================================================
@@ -309,7 +309,7 @@ INSERT OR IGNORE INTO compliance_notes
 (id, note, note_date)
 VALUES
 
-(1, 'Full audit log archived at /opt/northbridge/flag.txt.', '2026-09-01'),
+(1, 'Full audit log archived at /opt/northenbridge/flag.txt.', '2026-09-01'),
 (2, 'All student records remain subject to the clerk view restriction.', '2026-09-01'),
 (3, 'Quarterly data-protection review is scheduled before the spring term.', '2026-09-01');
 
@@ -323,6 +323,6 @@ VALUES
 INSERT OR IGNORE INTO flags
 (flag_name, flag_value, description)
 VALUES
-('Flag_01','Flag{Discovered_hidden_route}','Flag for discovering unlinked admin directory with login portal'),
-('Flag_02','Flag{Logged_in_as_Admin}','Flag for successfully logging in as admin'),
-('Flag_03','Flag{Explored_Limited_Records}','Flag for exploiting SQLi vulnerability and breaking limited record restriction');
+('Flag_01','NCC{Discovered_hidden_route}','Flag for discovering unlinked admin directory with login portal'),
+('Flag_02','NCC{Logged_in_as_Admin}','Flag for successfully logging in as admin'),
+('Flag_03','NCC{Explored_Limited_Records}','Flag for exploiting SQLi vulnerability and breaking limited record restriction');
