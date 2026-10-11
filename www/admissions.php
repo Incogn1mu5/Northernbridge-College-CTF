@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------
-// Northenbridge College — Admissions
+// Northernbridge College — Admissions
 // ---------------------------------------------------------
 
 require_once __DIR__ . '/includes/init.php';
@@ -9,7 +9,7 @@ $steps = [
     [
         "num"  => "01",
         "title" => "Create an Account",
-        "desc" => "Register on the student portal and receive your Northenbridge credentials.",
+        "desc" => "Register on the student portal and receive your Northernbridge credentials.",
     ],
     [
         "num"  => "02",
@@ -50,7 +50,7 @@ $year = date("Y");
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admissions — Northenbridge College</title>
+<title>Admissions — Northernbridge College</title>
 <style>
     :root {
         --ink:        #1c2a24;
@@ -292,7 +292,7 @@ $year = date("Y");
     <div class="page-hero-inner">
         <div>
             <div class="hero-motto sans">ADMISSIONS</div>
-            <h1>Your Path to Northenbridge</h1>
+            <h1>Your Path to Northernbridge</h1>
             <p class="lede">Admission is rolling for the fall term. Create your student account and enroll in your chosen department in under ten minutes.</p>
         </div>
         <div class="hero-panel">
