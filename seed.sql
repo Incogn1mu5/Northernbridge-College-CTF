@@ -1,7 +1,7 @@
 PRAGMA foreign_keys = ON;
 
 -- ============================================================
--- Northenbridge College CTF — seed data
+-- Northernbridge College CTF — seed data
 -- Idempotent: safe to run many times (CREATE IF NOT EXISTS +
 -- INSERT OR IGNORE). Existing player data is never destroyed.
 -- ============================================================
@@ -127,7 +127,7 @@ VALUES
     '2004-01-12',
     'Ahmedabad',
     'Information Technology',
-    'aaravpatel@northenbridge.lab',
+    'aaravpatel@northernbridge.lab',
     'aarav2004'
 ),
 
@@ -138,7 +138,7 @@ VALUES
     '2004-03-21',
     'Vadodara',
     'Computer Science',
-    'riyapatel@northenbridge.lab',
+    'riyapatel@northernbridge.lab',
     'riya2004'
 ),
 
@@ -149,7 +149,7 @@ VALUES
     '2003-11-08',
     'Surat',
     'Civil Engineering',
-    'vivaanshah@northenbridge.lab',
+    'vivaanshah@northernbridge.lab',
     'vivaan2003'
 ),
 
@@ -160,7 +160,7 @@ VALUES
     '2004-06-17',
     'Rajkot',
     'Mechanical Engineering',
-    'kavyasingh@northenbridge.lab',
+    'kavyasingh@northernbridge.lab',
     'kavya2004'
 ),
 
@@ -171,7 +171,7 @@ VALUES
     '2003-09-25',
     'Ahmedabad',
     'Information Technology',
-    'arjunnair@northenbridge.lab',
+    'arjunnair@northernbridge.lab',
     'arjun2003'
 ),
 
@@ -182,7 +182,7 @@ VALUES
     '2004-08-15',
     'Ahmedabad',
     'Information Technology',
-    'yashsharma@northenbridge.lab',
+    'yashsharma@northernbridge.lab',
     'yash2004'
 ),
 
@@ -193,7 +193,7 @@ VALUES
     '2004-05-03',
     'Uttarakhand,India',
     'Mechanical Engineering',
-    'rajtripathi@northenbridge.lab',
+    'rajtripathi@northernbridge.lab',
     'raj2004'
 ),
 
@@ -204,7 +204,7 @@ VALUES
     '2003-11-12',
     'jamaica',
     'Civil Engineering',
-    'jackokafor@northenbridge.lab',
+    'jackokafor@northernbridge.lab',
     'jack2003'
 ),
 
@@ -215,7 +215,7 @@ VALUES
     '2004-02-29',
     'jharkhand,india',
     'Information Technology',
-    'riyaagarwal@northenbridge.lab',
+    'riyaagarwal@northernbridge.lab',
     'riya2004'
 ),
 
@@ -226,7 +226,7 @@ VALUES
     '2002-06-03',
     'Mumbai, Maharashtra, India',
     'Computer Science',
-    'ananyapandey@northenbridge.lab',
+    'ananyapandey@northernbridge.lab',
     'ananya2002'
 ),
 
@@ -237,7 +237,7 @@ VALUES
     '2004-08-20',
     'Rajkot, Gujarat, India.',
     'Information Technology',
-    'raghavpatel@northenbridge.lab',
+    'raghavpatel@northernbridge.lab',
     'raghav2004'
 );
 
@@ -291,14 +291,14 @@ INSERT OR IGNORE INTO faculty
 (name, department, email, phone, title)
 VALUES
 
-('Dr. Anil Mehta', 'Information Technology', 'anil.mehta@northenbridge.lab', '9911223344', 'Professor'),
-('Ms. Priya Kannan', 'Information Technology', 'priya.kannan@northenbridge.lab', '9922334455', 'Assistant Professor'),
-('Mr. Rohan Singh', 'Computer Science', 'rohan.singh@northenbridge.lab', '9933445566', 'Professor'),
-('Dr. Lina Farouk', 'Computer Science', 'lina.farouk@northenbridge.lab', '9944556677', 'Associate Professor'),
-('Mr. David Okafor', 'Civil Engineering', 'david.okafor@northenbridge.lab', '9955667788', 'Professor'),
-('Ms. Fatima Hassan', 'Civil Engineering', 'fatima.hassan@northenbridge.lab', '9966778899', 'Assistant Professor'),
-('Mr. Mohd. Khan', 'Mechanical Engineering', 'mohammed.khan@northenbridge.lab', '9977889900', 'Professor'),
-('Dr. Emily Wong', 'Mechanical Engineering', 'emily.wong@northenbridge.lab', '9988990011', 'Associate Professor');
+('Dr. Anil Mehta', 'Information Technology', 'anil.mehta@northernbridge.lab', '9911223344', 'Professor'),
+('Ms. Priya Kannan', 'Information Technology', 'priya.kannan@northernbridge.lab', '9922334455', 'Assistant Professor'),
+('Mr. Rohan Singh', 'Computer Science', 'rohan.singh@northernbridge.lab', '9933445566', 'Professor'),
+('Dr. Lina Farouk', 'Computer Science', 'lina.farouk@northernbridge.lab', '9944556677', 'Associate Professor'),
+('Mr. David Okafor', 'Civil Engineering', 'david.okafor@northernbridge.lab', '9955667788', 'Professor'),
+('Ms. Fatima Hassan', 'Civil Engineering', 'fatima.hassan@northernbridge.lab', '9966778899', 'Assistant Professor'),
+('Mr. Mohd. Khan', 'Mechanical Engineering', 'mohammed.khan@northernbridge.lab', '9977889900', 'Professor'),
+('Dr. Emily Wong', 'Mechanical Engineering', 'emily.wong@northernbridge.lab', '9988990011', 'Associate Professor');
 
 
 -- =========================================
@@ -309,7 +309,7 @@ INSERT OR IGNORE INTO compliance_notes
 (id, note, note_date)
 VALUES
 
-(1, 'Full audit log archived at /opt/northenbridge/flag.txt.', '2026-09-01'),
+(1, 'Full audit log archived at /opt/northernbridge/flag.txt.', '2026-09-01'),
 (2, 'All student records remain subject to the clerk view restriction.', '2026-09-01'),
 (3, 'Quarterly data-protection review is scheduled before the spring term.', '2026-09-01');
 
