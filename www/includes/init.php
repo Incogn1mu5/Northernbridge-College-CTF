@@ -42,7 +42,7 @@ function nc_render_500(): void
 }
 
 set_exception_handler(static function (Throwable $e): void {
-    error_log('[Northbridge] Uncaught exception: ' . $e->getMessage()
+    error_log('[Northernbridge] Uncaught exception: ' . $e->getMessage()
             . ' @ ' . $e->getFile() . ':' . $e->getLine());
     nc_render_500();
 });
@@ -55,7 +55,7 @@ register_shutdown_function(static function (): void {
         [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR],
         true
     )) {
-        error_log('[Northbridge] Fatal error: ' . $err['message']
+        error_log('[Northernbridge] Fatal error: ' . $err['message']
                 . ' @ ' . $err['file'] . ':' . $err['line']);
         nc_render_500();
     }
