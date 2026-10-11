@@ -106,10 +106,10 @@ function nc_nav_class(string $target, string $current): string
 </style>
 
 <header class="nc-header">
-    <a class="nc-brand" href="index.php" title="Northenbridge College home">
+    <a class="nc-brand" href="index.php" title="Northernbridge College home">
         <span class="nc-crest">NC</span>
         <span class="nc-wordmark">
-            NORTHENBRIDGE
+            NORTHERNBRIDGE
             <small>COLLEGE</small>
         </span>
     </a>
