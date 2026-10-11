@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------
-// Northenbridge College — About
+// Northernbridge College — About
 // ---------------------------------------------------------
 
 require_once __DIR__ . '/includes/init.php';
@@ -38,7 +38,7 @@ $year = date("Y");
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About — Northenbridge College</title>
+<title>About — Northernbridge College</title>
 <style>
     :root {
         --ink:        #1c2a24;
@@ -259,9 +259,9 @@ $year = date("Y");
 <section class="page-hero">
     <div class="page-hero-inner">
         <div>
-            <div class="hero-motto sans">ABOUT NORTHENBRIDGE</div>
+            <div class="hero-motto sans">ABOUT NORTHERNBRIDGE</div>
             <h1>A College That Knows Its Students</h1>
-            <p class="lede">Northenbridge College is a small, residential college founded in 1968 on the belief that careful teaching and close community produce graduates of unusual depth.</p>
+            <p class="lede">Northernbridge College is a small, residential college founded in 1968 on the belief that careful teaching and close community produce graduates of unusual depth.</p>
         </div>
         <div class="hero-panel">
             <blockquote>“Established in purpose, built on rigor — a college where every student is known by name.”</blockquote>
@@ -286,7 +286,7 @@ $year = date("Y");
         <h2>Our Story</h2>
     </div>
     <div class="story">
-        <p>Northenbridge College was established in <?php echo $year - 58; ?> as a small liberal arts institution on a wooded campus outside the city. From the first graduating class of forty-two students, the college committed to something deliberately unfashionable: small classes, faculty who stay, and a curriculum that treats students as scholars in training rather than seats to fill.</p>
+        <p>Northernbridge College was established in <?php echo $year - 58; ?> as a small liberal arts institution on a wooded campus outside the city. From the first graduating class of forty-two students, the college committed to something deliberately unfashionable: small classes, faculty who stay, and a curriculum that treats students as scholars in training rather than seats to fill.</p>
         <p>Today that commitment is unchanged. We enroll roughly 1,400 undergraduates across five schools, keep the student–faculty ratio at 11 to 1, and require every student to complete an independent capstone before graduation. The campus has grown — the Innovation Building, the new sciences complex, and Whitfield Field all postdate the original quad — but the scale has not.</p>
         <p>What you will find here is straightforward: disciplined coursework, genuine mentorship, and a community that notices when you are absent.</p>
     </div>
