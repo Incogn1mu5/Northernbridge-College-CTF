@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------
-// Northenbridge College — Student Login
+// Northernbridge College — Student Login
 // ---------------------------------------------------------
 // Database authentication will be connected later.
 // This version provides the complete login UI and flow.
@@ -76,7 +76,7 @@ $year = date('Y');
     >
 
     <title>
-        Student Login — Northenbridge College
+        Student Login — Northernbridge College
     </title>
 
     <style>
@@ -598,7 +598,7 @@ $year = date('Y');
             <div>
 
                 <div class="eyebrow">
-                    NORTHENBRIDGE COLLEGE
+                    NORTHERNBRIDGE COLLEGE
                 </div>
 
                 <h1>
@@ -609,7 +609,7 @@ $year = date('Y');
                 <p>
                     Access your student profile,
                     academic information and examination
-                    results through the Northenbridge
+                    results through the Northernbridge
                     student portal.
                 </p>
 
@@ -680,7 +680,7 @@ $year = date('Y');
                                 $_POST['email'] ?? ''
                             );
                         ?>"
-                        placeholder="e.g. studentname@northenbridge"
+                        placeholder="e.g. studentname@northernbridge"
                         autocomplete="username"
                         required
                     >
