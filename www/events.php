@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------
-// Northenbridge College — Events Calendar
+// Northernbridge College — Events Calendar
 // ---------------------------------------------------------
 
 require_once __DIR__ . '/includes/init.php';
@@ -28,7 +28,7 @@ $events = [
         "time"  => "11:00 AM – 4:00 PM",
         "loc"   => "The Commons",
         "cat"   => "Careers",
-        "desc"  => "Over 40 employers on site. Bring copies of your resume and your Northenbridge ID.",
+        "desc"  => "Over 40 employers on site. Bring copies of your resume and your Northernbridge ID.",
     ],
     [
         "title" => "Homecoming Weekend",
@@ -79,7 +79,7 @@ $year = date("Y");
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Events — Northenbridge College</title>
+<title>Events — Northernbridge College</title>
 <style>
     :root {
         --ink:        #1c2a24;
@@ -243,7 +243,7 @@ $year = date("Y");
     <div class="page-hero-inner">
         <div class="hero-motto sans">CAMPUS EVENTS</div>
         <h1>Upcoming on Campus</h1>
-        <p class="lede">Lectures, fairs, performances, and long-standing traditions. All upcoming events are free for students with a Northenbridge ID.</p>
+        <p class="lede">Lectures, fairs, performances, and long-standing traditions. All upcoming events are free for students with a Northernbridge ID.</p>
     </div>
 </section>
 
