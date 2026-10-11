@@ -1,6 +1,6 @@
 <?php
 // ---------------------------------------------------------
-// Northenbridge College — Contact
+// Northernbridge College — Contact
 // ---------------------------------------------------------
 
 require_once __DIR__ . '/includes/init.php';
@@ -25,10 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $year = date("Y");
 $offices = [
-    ["dept" => "Admissions Office", "email" => "admissions@northenbridge", "phone" => "+1 (555) 010-2201", "hours" => "Mon–Fri, 8:30 AM – 4:30 PM"],
-    ["dept" => "Bursar's Office", "email" => "bursar@northenbridge", "phone" => "+1 (555) 010-2202", "hours" => "Mon–Fri, 9:00 AM – 3:00 PM"],
-    ["dept" => "Student Records", "email" => "records@northenbridge", "phone" => "+1 (555) 010-2203", "hours" => "Mon–Fri, 8:30 AM – 4:30 PM"],
-    ["dept" => "IT Support Desk", "email" => "helpdesk@northenbridge", "phone" => "+1 (555) 010-2204", "hours" => "Mon–Fri, 7:30 AM – 6:00 PM"],
+    ["dept" => "Admissions Office", "email" => "admissions@northernbridge", "phone" => "+1 (555) 010-2201", "hours" => "Mon–Fri, 8:30 AM – 4:30 PM"],
+    ["dept" => "Bursar's Office", "email" => "bursar@northernbridge", "phone" => "+1 (555) 010-2202", "hours" => "Mon–Fri, 9:00 AM – 3:00 PM"],
+    ["dept" => "Student Records", "email" => "records@northernbridge", "phone" => "+1 (555) 010-2203", "hours" => "Mon–Fri, 8:30 AM – 4:30 PM"],
+    ["dept" => "IT Support Desk", "email" => "helpdesk@northernbridge", "phone" => "+1 (555) 010-2204", "hours" => "Mon–Fri, 7:30 AM – 6:00 PM"],
 ];
 ?>
 <!DOCTYPE html>
@@ -36,7 +36,7 @@ $offices = [
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact — Northenbridge College</title>
+<title>Contact — Northernbridge College</title>
 <style>
     :root {
         --ink:        #1c2a24;
