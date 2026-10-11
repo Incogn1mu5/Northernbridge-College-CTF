@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Portal | Northenbridge College</title>
+    <title>Admin Portal | Northernbridge College</title>
 
     <style>
         :root {
@@ -404,11 +404,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <header class="nc-admin-header">
 
-<a class="nc-admin-brand" href="index.php" title="Northenbridge College Administration">
+<a class="nc-admin-brand" href="index.php" title="Northernbridge College Administration">
     <span class="nc-admin-crest">NC</span>
 
     <span class="nc-admin-wordmark">
-        NORTHENBRIDGE 
+        NORTHERNBRIDGE 
         <small>COLLEGE</small>
     </span>
 </a>
@@ -431,7 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </h1>
 
         <p>
-            Access the Northenbridge College administration
+            Access the Northernbridge College administration
             system to manage student academic records and
             administrative information.
         </p>
@@ -511,7 +511,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="notice">
             This portal is restricted to authorized
-            Northenbridge College administrators.
+            Northernbridge College administrators.
         </div>
 
     </section>
