@@ -175,7 +175,7 @@ $initials =
     >
 
     <title>
-        My Profile — Northedgebridge College
+        My Profile — Northernbridge College
     </title>
 
 
