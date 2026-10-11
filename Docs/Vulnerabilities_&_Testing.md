@@ -1,8 +1,9 @@
 # Vulnerabilities and Testing
 
-The vulnerabilities in this project are intentional and are limited to the fictional Northenbridge College application.
+The vulnerabilities in this project are intentional and are limited to the fictional Northernbridge College application.
 
-The tests below verify that the intended CTF path works without relying on unrelated system weaknesses.
+The tests below verify that the intended CTF path works without relying on unrelated system weaknesses.  
+</br>  
 
 ## 1. Hidden Admin Route
 
@@ -18,9 +19,8 @@ The player needs to perform directory enumeration and discover hidden `/admin` r
 
 ### Expected Result
 
-A player can reach the admin login page and obtain the first flag.
-
----
+A player can reach the admin login page and obtain the `Flag 01`.  
+</br>  
 
 ## 2. Exposed Credentials
 
@@ -36,9 +36,8 @@ The file contains fictional faculty credentials used by the challenge.
 
 A player who discovers the file can use the credentials to log into the admin portal.
 
-No real credentials are used by the project.
-
----
+No real credentials are used by the project.  
+</br>  
 
 ## 3. Limited Student Records
 
@@ -49,7 +48,7 @@ No real credentials are used by the project.
 /admin/edit-marks.php
 ```
 
-The admin dashboard only displays a limited number of student records. Player discovers Flag 02 on `/admin/dashboard.php`
+The admin dashboard only displays a limited number of student records. Player discovers `Flag 02` on `/admin/dashboard.php`
 
 The marks management page also applies a restriction to the normal search results.
 
@@ -57,9 +56,9 @@ The student created during the CTF is not normally visible in this list.
 
 ### Expected Result
 
-The player can identify that the visible records are incomplete and continue investigating the search functionality.
+The player can identify that the visible records are incomplete and continue investigating the search functionality.  
+</br>  
 
----
 ## 4. Intended Student Search Restriction
 
 ### Location
@@ -102,7 +101,8 @@ edit marks → NC-* student
      ▼
 Flag 03
 ```
----
+</br>  
+
 ## 5. SQL Injection
 
 ### Location
@@ -121,9 +121,8 @@ The actual marks update operation uses a prepared statement; the intended weakne
 
 A player can manipulate the search input to bypass the normal student ID restriction and discover additional fictional records.
 
-The player's own student ID can then be used with the marks editing interface.
-
----
+The player's own student ID can then be used with the marks editing interface.  
+</br>  
 
 ## 6. Local File Inclusion
 
@@ -135,9 +134,8 @@ The same parameter which fetches the student record can also fetch system-files.
 
 ### Expected Result
 
-After finding clue for final flag, LFI technique can be used to retrieve system files and display it on webapp which will display Final flag `NCC{...}`
-
----
+After finding clue for final flag, LFI technique can be used to retrieve system files and display it on webapp which will display Final `Flag 04`  
+</br>  
 
 # Testing
 
@@ -172,14 +170,14 @@ After finding clue for final flag, LFI technique can be used to retrieve system 
 
 ## CTF Path Test
 
-* [x] Flag 1 is available from the hidden admin route.
-* [x] Flag 2 is available after successful login and access to admin dashboard.
-* [x] Flag 3 is available during the limited-record stage.
+* [x] Flag 01 is available from the hidden admin route.
+* [x] Flag 02 is available after successful login and access to admin dashboard.
+* [x] Flag 03 is available during the limited-record stage.
 * [x] SQL injection allows the intended additional records to be discovered.
 * [x] The player's student record can be identified.
 * [x] SQL injection allows the player to dump metadata of database.
 * [x] Database has clue for Final Flag.
-* [x] Final Flag present outside the database and stored on system with unique token value.
+* [x] Final `Flag 04` present outside the database and stored on system with unique token value.
 * [x] Local File Inclusion works and retrieves intended flag.txt from systemfiles. 
 
 ## Network Test
