@@ -2,7 +2,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "ubuntu/jammy64"
   config.vm.boot_timeout = 1200
-  config.vm.hostname = "northenbridge"
+  config.vm.hostname = "northernbridge"
 
   # --------------------------------------------------------------------------
   # Development mode
@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
 
   if dev_mode
     puts "===================================================="
-    puts " Northenbridge CTF - DEVELOPMENT MODE"
+    puts " Northernbridge-College-CTF - DEVELOPMENT MODE"
     puts " Host ./www -> VM /var/www/html"
     puts " GitHub source cloning DISABLED"
     puts "===================================================="
@@ -50,7 +50,7 @@ Vagrant.configure("2") do |config|
   config.vm.network "public_network"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.name = "northenbridge-ctf"
+    vb.name = "Northernbridge-College-CTF"
     vb.memory = 2048
     vb.cpus = 2
   end
