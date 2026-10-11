@@ -112,11 +112,11 @@ function nc_admin_nav_class(string $target, string $current): string {
 
 <header class="nc-admin-header">
 
-<a class="nc-admin-brand" href="dashboard.php" title="Northenbridge College Administration">
+<a class="nc-admin-brand" href="dashboard.php" title="Northernbridge College Administration">
     <span class="nc-admin-crest">NC</span>
 
     <span class="nc-admin-wordmark">
-        NORTHENBRIDGE 
+        NORTHERNBRIDGE 
         <small>COLLEGE</small>
     </span>
 </a>
