@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-The Northenbridge College CTF is a progressive investigation through a
+The Northernbridge College CTF is a progressive investigation through a
 fictional college portal. The player starts as a normal student and
 gradually discovers weaknesses in the portal, with each stage teaching
 one concept at a time.
@@ -50,13 +50,13 @@ Player's Student Record
 Dump full database using SQLi
       │
       ▼
-Follow compliance notes clue to find final flag
+Follow compliance notes clue to find final Flag 04
 ```
 </br>  
 
 ## 2. Player Starting Point
 
-1. Player starts at the public Northenbridge College homepage,
+1. Player starts at the public Northernbridge College homepage,
    presented as a normal fictional college portal.
 2. Primary student functionality: registration, login, profile,
    examination marks.
@@ -68,12 +68,12 @@ Follow compliance notes clue to find final flag
 
 | # | Stage | Where it happens | Flag | Location |
 |---|---|---|---|---|
-| 1 | Discover the hidden admin portal | `/admin/` is unlinked; brute-forceable | `Flag{Discovered_hidden_route}` | On the admin login page |
+| 1 | Discover the hidden admin portal | `/admin/` is unlinked; brute-forceable | `NCC{Dis.....}` | On the admin login page |
 | 2 | Password spraying | Decoy `/var/www/html/.env` with 12 fictional `username:password` pairs; only `helen.carter:Winter2026!` is valid | (evidence = login + Apache access log) | — |
-| 3 | Access admin dashboard | `/admin/dashboard.php` | `Flag{Logged_in_as_Admin}` | On the admin dashboard |
-| 4 | Restricted clerk view | `www/admin/edit-marks.php`, default (no-search) view, scoped to admin's own department via `NB-%` + `:department` | `Flag{Explored_Limited_Records}` | Under the restricted student-record view |
-| 5 | Database exfiltration | SQL injection via `search=` on `edit-marks.php` → dump all tables → read the compliance note | Clue pointing to `/opt/northenbridge/flag.txt` | In the search field, parameter `search=` |
-| 6 | Final flag | Local File Inclusion via `id=` on `edit-marks.php` | `NCC{...}` | Filesystem `/opt/northenbridge/flag.txt`, **not** in the database |
+| 3 | Access admin dashboard | `/admin/dashboard.php` | `NCC{Log.....}` | On the admin dashboard |
+| 4 | Restricted clerk view | `www/admin/edit-marks.php`, default (no-search) view, scoped to admin's own department via `NB-%` + `:department` | `NCC{Exp.....}` | Under the restricted student-record view |
+| 5 | Database exfiltration | SQL injection via `search=` on `edit-marks.php` → dump all tables → read the compliance note | Clue pointing to `/opt/northernbridge/flag.txt` | In the search field, parameter `search=` |
+| 6 | Final flag | Local File Inclusion via `id=` on `edit-marks.php` | `NCC{...}` | Filesystem `/opt/northernbridge/flag.txt`, **not** in the database |
 
 The final (stage 6) flag is created by `infra/provision.sh` with a
 random token per deployment, stored `root:www-data` mode `0640`. The
@@ -94,7 +94,7 @@ was removed from the `flags` table for this reason).
   option errors out.
 - Through directory enumeration, player discovers `.env` and the
   hidden `/admin` route.
-- Visiting `/admin/` reveals **Flag 1** (`Flag{Discovered_hidden_route}`)
+- Visiting `/admin/` reveals **Flag 01** (`NCC{Dis.....}`)
   on the admin login page.
 
 **Technical implementation:**
@@ -115,7 +115,7 @@ to authenticate.
 **Flow:**
 - Player discovers `.env`, finds fictional admin credentials.
 - Returns to the admin login page and authenticates.
-- On success, **Flag 2** (`Flag{Logged_in_as_Admin}`) appears on the
+- On success, **Flag 02** (`NCC{Log.....}`) appears on the
   admin dashboard.
 
 **Technical implementation:**
@@ -134,7 +134,7 @@ to authenticate.
   wouldn't match it). Returns HTTP 200, not blocked.
 - **LAB ONLY — no throttling:** no lockout/rate-limit/CAPTCHA by
   design. Every spray attempt is one line in the Apache access log
-  (`northenbridge_access.log`).
+  (`northernbridge_access.log`).
 
 **Lesson:** A `.env` file is not an access-control mechanism and must
 not be publicly accessible.
@@ -153,7 +153,7 @@ admin student-record page, before exploiting anything.
   `NB-*` records, all from the signed-in admin's own department.
 - Player should observe — not yet exploit — what's visible, what
   fields are shown, and that the set is intentionally small/limited.
-- **Flag 3** (`Flag{Explored_Limited_Records}`) is tied to this stage.
+- **Flag 03** (`NCC{Exp.....}`) is tied to this stage.
 
 **Technical implementation (default view — the only place the
 department restriction is actually enforced):**
@@ -241,7 +241,7 @@ $result = $db->query($query); // raw, unparameterized
   ```text
   ') OR `VALUE`=`VALUE` /*
   ') UNION SELECT <COLUMN 01>,<COLUMN 02> ...,<COLUMN 08> FROM sqlite_master /*
-  ') UNION SELECT <COLUMN 01>,<COLUMN 02>,<COLUMN 03>,NULL,NULL,NULL,NULL,NULL FROM compliance_notes /*
+  ') UNION SELECT <COLUMN 01>,<COLUMN 02>,<COLUMN 03>,NULL,NULL,NULL,NULL,NULL FROM <TABLE_NAME> /*
   ```
   (Each `LIKE` is `'%$search%'`, so `')` closes the quoted literal and
   the surrounding paren group before the `UNION`.)
@@ -263,7 +263,7 @@ and it still isn't enforced.
 ### Stage 5 — Database Exfiltration
 
 **Objective:** Use the Stage 4 injection to dump the database and find
-the clue to the final flag.
+the clue to the final **Flag 04**.
 
 **Flow:**
 - Using the `UNION SELECT ... FROM sqlite_master` and follow-up
@@ -271,7 +271,7 @@ the clue to the final flag.
   `students`, `courses`, `marks`, `faculty`, `compliance_notes`,
   `admins`, `flags`.
 - `compliance_notes` contains the bridging hint:
-  > Full audit log archived at `/opt/northenbridge/flag.txt`
+  > Full audit log archived at `/opt/northernbridge/flag.txt`
 - This hint is the bridge from the database dump to the Stage 6
   filesystem flag.
 
@@ -281,14 +281,14 @@ class (here, LFI) further down the chain.
 
 ---
 
-### Stage 6 — Final Flag via LFI (`id=`)
+### Stage 6 — Final Flag 04 via LFI (`id=`)
 
 **Objective:** Exploit the Local File Inclusion on `id=` to read
-`/opt/northenbridge/flag.txt` and obtain the final flag.
+`/opt/northernbridge/flag.txt` and obtain the final `Flag 04`.
 
 **Flow:**
-- Player supplies the path found in Stage 5 as `?id=/opt/northenbridge/flag.txt`.
-- **Flag 4 / final flag** (`NCC{...}`) is returned.
+- Player supplies the path found in Stage 5 as `?id=/opt/northernbridge/flag.txt`.
+- **Flag 04 / final flag** (`NCC{...}`) is returned.
 
 **Technical implementation — the LFI branch, and `id`'s dual purpose:**
 ```php
@@ -351,7 +351,7 @@ query branch, not just some.
 
 ```
 ┌──────────────────────────────────────┐
-│ 1. Visit Northenbridge College      │
+│ 1. Visit Northernbridge College       │
 │    Website                           │
 └──────────────────┬───────────────────┘
                    ▼
@@ -374,7 +374,7 @@ query branch, not just some.
 │    Discover Admin Login Portal       │
 └──────────────────┬───────────────────┘
                    │
-              [ FLAG 1 ]
+         [ FLAG 01 / NCC {...}]
                    │
                    ▼
 ┌──────────────────────────────────────┐
@@ -388,7 +388,7 @@ query branch, not just some.
 │    records — default view            │
 └──────────────────┬───────────────────┘
                    │
-               [ FLAG 2 ]
+         [ FLAG 02 / NCC{...} ]
                    │
                    ▼
 ┌──────────────────────────────────────┐
@@ -397,7 +397,8 @@ query branch, not just some.
 │    query handling                    │
 └──────────────────┬───────────────────┘
                    │
-              [ FLAG 3 ]
+         [ FLAG 03 / NCC{...}]
+                   │
                    ▼
 ┌──────────────────────────────────────┐
 │ 9. SQLi via search= to bypass NB-%   │
@@ -415,7 +416,7 @@ query branch, not just some.
 │     Retrieve flag.txt from system    │
 └──────────────────┬───────────────────┘
                    │
-             [ FLAG 4 / NCC{...} ]
+         [ FLAG 04 / NCC{...} ]
                    │
                    ▼
              CTF COMPLETED
