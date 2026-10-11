@@ -37,9 +37,9 @@
 
 <footer class="nc-footer">
     <p>
-        <span class="nc-foot-brand">Northenbridge College</span>
+        <span class="nc-foot-brand">Northernbridge College</span>
         &nbsp;&middot;&nbsp;
-        &copy; <?= date('Y') ?> Northenbridge College
+        &copy; <?= date('Y') ?> Northernbridge College
         &nbsp;&middot;&nbsp;
         <a href="index.php">Home</a>
     </p>
