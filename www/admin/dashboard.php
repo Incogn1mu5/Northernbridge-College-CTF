@@ -111,7 +111,7 @@ while ($row = $studentResult->fetchArray(SQLITE3_ASSOC)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Dashboard | Northenbridge College</title>
+    <title>Admin Dashboard | Northernbridge College</title>
 
     <style>
 
@@ -405,7 +405,7 @@ while ($row = $studentResult->fetchArray(SQLITE3_ASSOC)) {
         </h1>
 
         <p>
-            Welcome to the Northenbridge College administration portal.
+            Welcome to the Northernbridge College administration portal.
         </p>
 
     </section>
