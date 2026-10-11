@@ -1,7 +1,7 @@
-# Northenbridge College CTF - Architecture 
+# Northernbridge College CTF - Architecture 
 ## 1. Overview
 
-Northenbridge College CTF is a fictional college web portal designed as a beginner-friendly, intentionally vulnerable cybersecurity lab.
+Northernbridge College CTF is a fictional college web portal designed as a beginner-friendly, intentionally vulnerable cybersecurity lab.
 
 The project uses:
 
@@ -29,9 +29,9 @@ CTF Player01    CTF Player02      ....
                      ▼                
           Access College Website      
          ┌───────────────────────┐    
-         │http://< vm-IP >:8080  │    
+         │http://vm-Bridged-IP/  │    
          ├───────────────────────┤    
-         │ Northenbridge College │    
+         │ Northernbridge College │    
          └───────────────────────┘    
                      ▲                
                      │                
@@ -39,7 +39,7 @@ CTF Player01    CTF Player02      ....
     ┌───────── Bridge Network ───────┐
     │                │               │
     │    ┌───────────┼──────────┐    │
-    │    │    "northenbridge"   │    │
+    │    │    "northernbridge"   │    │
     │    │           │          │    │
     │    │ ┌─────────┼───────┐  │    │
     │    │ │        PHP   SQLite│    │
@@ -69,8 +69,8 @@ VM Components|Configuration
 -|-
 Vagrant box | ubuntu/jammy64
 Provider | Virtual Box 7.2.4
-Hostname | northenbridge
-VirtualBox VM name | northenbridge-ctf
+Hostname | northernbridge
+VirtualBox VM name | northernbridge-ctf
 Memory | 2048 MB
 CPUs | 2
 Web server | Apache2 (2.4.58)
@@ -95,7 +95,7 @@ The current Vagrant configuration hosts website directly on LAN using bridge net
 │    1           2           3    │
 │    └───────────┼───────────┘    │
 │                ▼                │
-│      Northenbridge College      │
+│      Northernbridge College      │
 │             Website             │
 │                ▲                │
 │                │                │
@@ -115,7 +115,7 @@ Players access the application using the VM's LAN address:
 http://<VM-IP>:80
 ```
 
-The northenbridge.local Apache ServerName does not automatically provide DNS resolution to player devices, so the IP address is the simplest event access method unless local DNS is configured.
+The northernbridge.local Apache ServerName does not automatically provide DNS resolution to player devices, so the IP address is the simplest event access method unless local DNS is configured.
 
 The vulnerable application should remain on a controlled/private network and must not be exposed to the public internet.  
 </br>  
@@ -140,13 +140,13 @@ Windows host
 Inside the VM
 
 1. Install Apache, PHP, SQLite, Git, cURL and rsync dependencies.
-2. Clone PORTAL_REPO:PORTAL_BRANCH into /opt/northenbridge-src.
+2. Clone PORTAL_REPO:PORTAL_BRANCH into /opt/northernbridge-src.
 3. Rsync $PORTAL_SUBDIR (www) into /var/www/html, excluding the database directory.
-4. Configure Apache virtual host for http://northenbridge.local/.
+4. Configure Apache virtual host for http://northernbridge.local/.
 5. Write the decoy .env file into /var/www/html/.env.
-6. Create /opt/northenbridge/flag.txt outside the web root.
+6. Create /opt/northernbridge/flag.txt outside the web root.
 7. Seed SQLite from seed.sql, skipping initialization if tables already exist.
-8. Restart Apache and verify HTTP 200 on 127.0.0.1:80.
+8. Restart Apache and verify HTTP 200 on 127.0.0.1:80 inside the VM.
 ```
 
 Deployment flow:
@@ -160,11 +160,11 @@ Windows host
                 ▼
           Ubuntu VM
                 │
-                ├── Git clone → /opt/northenbridge-src
+                ├── Git clone → /opt/northernbridge-src
                 ├── Rsync     → /var/www/html
                 ├── SQLite    → application database
-                ├── Flag      → /opt/northenbridge/flag.txt
-                └── Apache    → northenbridge.local
+                ├── Flag 04   → /opt/northernbridge/flag.txt
+                └── Apache    → northernbridge.local
 ```
 
 In this mode, the Git repository is the source of the application code deployed into the VM. Changes made to the host's application files do not automatically update the deployed site.  
@@ -191,9 +191,9 @@ Inside the VM
 1. Install the required system packages.
 2. Configure the development-mode application source path or shared folder.
 3. Make the host's application files available directly to Apache, rather than relying on a fresh Git clone and rsync for each edit.
-4. Configure Apache for http://northenbridge.local/.
+4. Configure Apache for http://northernbridge.local/.
 5. Initialize SQLite from seed.sql when the database tables do not already exist.
-6. Restart Apache and verify HTTP 200 on 127.0.0.1:80.
+6. Restart Apache and verify HTTP 200 on 127.0.0.1:80 inside the VM.
 ```
 
 Development deployment flow:
@@ -210,15 +210,15 @@ Windows host
                    ▼
                 Ubuntu VM
                    │
-                   ├── Apache → shared application files
-                   ├── SQLite → application database
-                   ├── Flag   → /opt/northenbridge/flag.txt
-                   └── Vhost  → northenbridge.local
+                   ├── Apache  → shared application files
+                   ├── SQLite  → application database
+                   ├── Flag 04 → /opt/northernbridge/flag.txt
+                   └── Vhost   → northernbridge.local
 ```
 
 
 
-The `www` directory in the repository is the portal application source (the "northenbridge-portal" content). At runtime it is served from `/var/www/html` inside the VM and is fully independent of the host filesystem — host edits only reach the VM if development mode is enabled before deploying lab.  
+The `www` directory in the repository is the portal application source (the "northernbridge-portal" content). At runtime it is served from `/var/www/html` inside the VM and is fully independent of the host filesystem — host edits only reach the VM if development mode is enabled before deploying lab.  
 </br>
 
 ## 6. Web Server
@@ -410,7 +410,7 @@ The provisioning process:
 
 The seed file provides the fictional students, marks, administrator account, and the in-application CTF flags.
 
-The **final** flag is deliberately placed outside the database by the provisioning script, at `/opt/northenbridge/flag.txt`.  
+The **final** flag is deliberately placed outside the database by the provisioning script, at `/opt/northernbridge/flag.txt`.  
 </br>  
 
 ## 11. Application Data Flow
@@ -528,7 +528,7 @@ The host operating system, Vagrant configuration, SSH service, and unrelated sys
 
 The implemented CTF contains six main stages:
 
-Stage| Ares of Application | Intended lesson
+Stage| Areas of Application | Intended lesson
 -|-|-
 1 | Hidden /admin route | Hidden routes are not access control
 2 | Web-accessible decoy sprayable .env file | Sensitive information should not be exposed through web files
