@@ -1,11 +1,11 @@
 <?php
 
 try {
-    $db = new SQLite3('/var/lib/northenbridge/college.db');
+    $db = new SQLite3('/var/lib/northernbridge/college.db');
     $db->busyTimeout(5000);
     $db->exec('PRAGMA foreign_keys = ON;');
 } catch (Throwable $e) {
-    error_log('[Northenbridge] Database connection failed: ' . $e->getMessage());
+    error_log('[Northernbridge] Database connection failed: ' . $e->getMessage());
 
     if (!headers_sent()) {
         header('Content-Type: text/html; charset=utf-8');
