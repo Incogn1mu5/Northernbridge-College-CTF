@@ -19,11 +19,11 @@ DEV_MODE="${DEV_MODE:-0}"
 # is synced by Vagrant.
 LOCAL_PROJECT_DIR="${LOCAL_PROJECT_DIR:-/vagrant}"
 
-BUILD_DIR="${BUILD_DIR:-/opt/northenbridge-src}"
-DB_DIR="${DB_DIR:-/var/lib/northenbridge}"
+BUILD_DIR="${BUILD_DIR:-/opt/northernbridge-src}"
+DB_DIR="${DB_DIR:-/var/lib/northernbridge}"
 DB_PATH="${DB_PATH:-$DB_DIR/college.db}"
 DECOY_ENV="${DECOY_ENV:-$PORTAL_DIR/.env}"
-FLAG_DIR="${FLAG_DIR:-/opt/northenbridge}"
+FLAG_DIR="${FLAG_DIR:-/opt/northernbridge}"
 FLAG_FILE="${FLAG_FILE:-$FLAG_DIR/flag.txt}"
 
 SITE_HOST="${SITE_HOST:-127.0.0.1}"
@@ -32,7 +32,7 @@ SITE_PORT="${SITE_PORT:-80}"
 log() { printf '\n====================================================\n[%s] %s\n\n' "$(date +%H:%M:%S)" "$*"; }
 
 echo "======================================"
-echo " Northenbridge CTF VM Provisioning"
+echo " Northernbridge CTF VM Provisioning"
 echo " (provisioning-only build, no host sync)"
 echo "======================================"
 
@@ -126,11 +126,11 @@ log "[4/8] Configuring Apache..."
 a2enmod -q rewrite >/dev/null 2>&1 || true
 a2enmod -q php8.1  >/dev/null 2>&1 || true
 
-cat > /etc/apache2/sites-available/northenbridge.conf <<VHOST
+cat > /etc/apache2/sites-available/northernbridge.conf <<VHOST
 <VirtualHost *:80>
 
-    ServerName northenbridge.local
-    ServerAdmin webmaster@northenbridge.local
+    ServerName northernbridge.local
+    ServerAdmin webmaster@northernbridge.local
 
     DocumentRoot $PORTAL_DIR
 
@@ -151,8 +151,8 @@ cat > /etc/apache2/sites-available/northenbridge.conf <<VHOST
         Require all granted
     </Directory>
 
-    ErrorLog \${APACHE_LOG_DIR}/northenbridge_error.log
-    CustomLog \${APACHE_LOG_DIR}/northenbridge_access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/northernbridge_error.log
+    CustomLog \${APACHE_LOG_DIR}/northernbridge_access.log combined
 
     # Shared runtime includes are never meant to be fetched directly.
     <DirectoryMatch "$PORTAL_DIR/includes">
@@ -169,7 +169,7 @@ cat > /etc/apache2/sites-available/northenbridge.conf <<VHOST
 VHOST
 
 a2dissite 000-default.conf >/dev/null 2>&1 || true
-a2ensite northenbridge.conf  >/dev/null 2>&1 || true
+a2ensite northernbridge.conf  >/dev/null 2>&1 || true
 
 # ---------------------------------------------------------------------------
 # [4a] Production PHP settings
@@ -189,14 +189,14 @@ fi
 log "[5/8] Placing decoy credential file ($DECOY_ENV)..."
 
 cat > "$DECOY_ENV" <<'ENV'
-# Northenbridge College portal — environment configuration
+# Northernbridge College portal — environment configuration
 # -----------------------------------------------------
 # LAB ONLY — FICTIONAL CREDENTIALS. All usernames and passwords below
 # are made up for an offline CTF exercise and describe no real system,
 # account, or person. They must never be reused outside this lab.
 # -----------------------------------------------------
 APP_ENV=production
-APP_URL=http://northenbridge.local
+APP_URL=http://northernbridge.local
 APP_DEBUG=false
 
 DB_CONNECTION=sqlite
@@ -237,7 +237,7 @@ else
     TOKEN="$(od -An -N6 -tx1 /dev/urandom | tr -d ' \n')"
     NCC_FLAG="NCC{$TOKEN}"
     cat > "$FLAG_FILE" <<FLAG
-Northenbridge College CTF — Final Flag
+Northernbridge College CTF — Final Flag
 
 Congratulations: Here is Your flag for successfully exploiting Local File Inclusion Vulnerability
 
@@ -309,7 +309,7 @@ DELETE FROM flags WHERE flag_name = 'Flag_04';
 INSERT OR IGNORE INTO compliance_notes
     (id, note, note_date)
 VALUES
-    (1, 'Full audit log archived at /opt/northenbridge/flag.txt (lab host only).', '2026-09-01'),
+    (1, 'Full audit log archived at /opt/northernbridge/flag.txt (lab host only).', '2026-09-01'),
     (2, 'All student records remain subject to the clerk view restriction.', '2026-09-01'),
     (3, 'Quarterly data-protection review is scheduled before the spring term.', '2026-09-01');
 SQL
