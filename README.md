@@ -311,12 +311,12 @@ Detailed testing information is available in [Vulnerabilities_&_Testing.md](http
 
 | Document | Audience | Description |
 |---|---|---|
-| [Instructor Guide](Scenarios/NCC_Instructor-Guide.md) | Instructor / reviewer only | Full solution path, flag locations, timing plan, reset procedure, troubleshooting, and safety briefing. **Contains solutions — do not hand to students.** |
-| [Student Lab Guide](Scenarios/NCC_Student-Guide.md) | Students | Objective, rules of engagement, staged hints, submission flow, and reflection questions. **No solutions.** |
-| [Learning Objectives & Real-World Impact](Scenarios/NCC_Learning-Objectives.md) | Students + instructor + curriculum reviewers | Per-stage concept, lab demonstration, learning outcomes, real-world impact, and remediation guidance. |
-| [Documentation Review Note](Scenarios/NCC_Documentation-Review-Notes.md) | Reviewer | Self-review against the Phase 4 checklist plus verification test evidence. |
+| [Instructor Guide](Scenarios/Instructor-Guide.md) | Instructor / reviewer only | Full solution path, flag locations, timing plan, reset procedure, troubleshooting, and safety briefing. **Contains solutions — do not hand to students.** |
+| [Student Lab Guide](Scenarios/Student-Guide.md) | Students | Objective, rules of engagement, staged hints, submission flow, and reflection questions. **No solutions.** |
+| [Learning Objectives & Real-World Impact](Scenarios/Learning-Objectives.md) | Students + instructor + curriculum reviewers | Per-stage concept, lab demonstration, learning outcomes, real-world impact, and remediation guidance. |
+| [Documentation Review Note](https://github.com/Incogn1mu5/Northernbridge-College-CTF/blob/cee1f9c7f9e17dc2f01793062f26ecdc5e9f3ba5/Scenarios/NCC_Document-Review-Notes.md) | Reviewer | Self-review against the Phase 4 checklist plus verification test evidence. |
 | [Architecture](Docs/Architecture.md) | Instructor / developer | VM, networking, web server, database, and application structure. |
-| [CTF Design & Challenge Flow](Docs/CTF-Design_&_Challenge-Flow.md) | Instructor / developer | Stage-by-stage design, flag table, and intended learning outcomes. |
+| [CTF Design & Challenge Flow](https://github.com/Incogn1mu5/Northernbridge-College-CTF/blob/cee1f9c7f9e17dc2f01793062f26ecdc5e9f3ba5/Docs/CTF%20Design_%26_Challenge-Flow.md) | Instructor / developer | Stage-by-stage design, flag table, and intended learning outcomes. |
 | [Deployment](Docs/Deployment.md) | Instructor / developer | Normal and development deployment modes, provisioning, and reset. |
 | [Vulnerabilities & Testing](Docs/Vulnerabilities_&_Testing.md) | Instructor / developer | Intentional vulnerability locations and test results. |
 
