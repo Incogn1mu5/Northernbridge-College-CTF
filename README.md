@@ -31,7 +31,6 @@ The project combines a simple student portal with an intentionally vulnerable ad
 * Student login/logout
 * Profile viewing and editing
 * Personal marks and result status
-* Reassessment functionality containing a CTF clue
 
 ### Admin Portal
 
@@ -137,7 +136,6 @@ The project uses shared folders so that the web application can be edited direct
   │   ├── db.php                      
   │   ├── 404.html                    
   │   ├── 500.html                    
-  │   ├── .env
   │   ├── .htaccess
   │   │                   
   │   ├── admin/                      
@@ -155,21 +153,21 @@ The project uses shared folders so that the web application can be edited direct
   │                
   ├── docs/                           
   │   ├── Architecture.md             
-  │   ├── CTF-Design_&_Challenge-Flow.md                 
+  │   ├── CTF Design_&_Challenge-Flow.md                 
   │   ├── Deployment.md
   │   └── Vulnerabilities_&_Testing.md
   │
   ├── scenarios/
-  │   ├── Instructor-Guide.md             
-  │   ├── Student-Guide.md                 
-  │   ├── Learning-Objectives.md
-  │   └── Documentation-Review-Note.md
+  │   ├── NCC_Instructor-Guide.md             
+  │   ├── NCC_Student-Guide.md                 
+  │   ├── NCC_Learning-Objectives.md
+  │   └── NCC_Documentation-Review-Note.md
   │
   └── Screenshots/                    
-      ├── homepage.png                
-      ├── student-portal.png          
-      ├── marks-page.png              
-      └── admin-dashboard.png         
+      ├── NCC_homepage.png                
+      ├── NCC_student-portal.png          
+      ├── NCC_marks-page.png              
+      └── NCC_admin-dashboard.png         
 ```  
 </br>  
 
