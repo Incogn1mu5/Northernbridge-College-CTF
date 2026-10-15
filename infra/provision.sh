@@ -4,7 +4,7 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-PORTAL_REPO="${PORTAL_REPO:-https://github.com/Incogn1mu5/NothernBridge-CTF_phase_3.git}"
+PORTAL_REPO="${PORTAL_REPO:-https://github.com/Incogn1mu5/Northernbridge-College-CTF.git}"
 PORTAL_BRANCH="${PORTAL_BRANCH:-main}"
 PORTAL_SUBDIR="${PORTAL_SUBDIR:-www}"
 PORTAL_SEED="${PORTAL_SEED:-seed.sql}"
