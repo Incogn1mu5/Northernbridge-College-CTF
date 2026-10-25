@@ -397,26 +397,6 @@ echo "  Decoy .env     : $DECOY_ENV"
 echo "  Final flag     : $FLAG_FILE"
 echo
 
-if [ -n "$NAT_IP" ]; then
-    echo "  [NAT adapter]      http://$NAT_IP:$SITE_PORT/    ->  HTTP ${NAT_CODE:-n/a}"
-    echo "                     This site is ONLY accessible from inside the VirtualBox VM."
-    echo "                     The host machine will NOT be able to reach this address"
-    echo "                     until a port-forward is configured in the Vagrantfile."
-else
-    echo "  [NAT adapter]      not detected."
-fi
-
-echo
-
-if [ -n "$BRIDGE_IP" ]; then
-    echo "  [Bridged adapter]  http://$BRIDGE_IP:$SITE_PORT/    ->  HTTP ${BRIDGE_CODE:-n/a}"
-    echo "                     This site can be reached by anyone connected to the same"
-    echo "                     router / local network as this VM."
-else
-    echo "  [Bridged adapter]  not detected."
-fi
-
-echo
 
 # The lab is considered healthy if at least one adapter serves HTTP 200.
 if [ "$NAT_CODE" != "200" ] && [ "$BRIDGE_CODE" != "200" ]; then
@@ -424,8 +404,4 @@ if [ "$NAT_CODE" != "200" ] && [ "$BRIDGE_CODE" != "200" ]; then
     echo "       NAT    : $NAT_IP    (HTTP ${NAT_CODE:-n/a})" >&2
     echo "       BRIDGE : $BRIDGE_IP (HTTP ${BRIDGE_CODE:-n/a})" >&2
     exit 1
-fi
-
-if [ -f "$DB_PATH" ]; then
-    echo "  Student rows   : $(sqlite3 "$DB_PATH" 'SELECT COUNT(*) FROM students;')"
 fi
