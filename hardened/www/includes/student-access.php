@@ -8,10 +8,7 @@ function fetch_authorized_student(SQLite3 $db, string $studentId, string $adminD
         FROM students s
         LEFT JOIN marks m ON s.student_id = m.student_id
         WHERE s.student_id = :student_id
-          AND (
-                s.student_id LIKE \'NC-%\'
-                OR s.department = :department
-              )
+          AND s.department = :department
         LIMIT 1
     ');
     $stmt->bindValue(':student_id', $studentId, SQLITE3_TEXT);
