@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS admins (
     name TEXT NOT NULL,
     number TEXT NOT NULL,
     salary REAL NOT NULL DEFAULT 0,
-    department TEXT NOT NULL DEFAULT 'Information Technology'
+    department TEXT NOT NULL
 );
 
 
@@ -105,39 +105,17 @@ VALUES
 ),
 
 (   'NB-RP26-1002',
-    'Riya',
-    'Patel',
-    '9258792358',
-    '2004-03-21',
-    'Vadodara',
-    'Computer Science',
-    'riyapatel@northernbridge.lab',
-    'riya2004'
+    'Raghav',
+    'patel',
+    '7865324567',
+    '2004-08-20',
+    'Rajkot, Gujarat, India.',
+    'Information Technology',
+    'raghavpatel@northernbridge.lab',
+    'raghav2004'
 ),
 
-(   'NB-VS26-1003',
-    'Vivaan',
-    'Shah',
-    '9344665130',
-    '2003-11-08',
-    'Surat',
-    'Civil Engineering',
-    'vivaanshah@northernbridge.lab',
-    'vivaan2003'
-),
-
-(   'NB-KS26-1004',
-    'Kavya',
-    'Singh',
-    '9004567890',
-    '2004-06-17',
-    'Rajkot',
-    'Mechanical Engineering',
-    'kavyasingh@northernbridge.lab',
-    'kavya2004'
-),
-
-(   'NB-AN26-1005',
+(   'NB-AN26-1003',
     'Arjun',
     'Nair',
     '9059993456',
@@ -148,7 +126,7 @@ VALUES
     'arjun2003'
 ),
 
-(   'NB-YS26-1006',
+(   'NB-YS26-1004',
     'Yash',
     'Sharma',
     '9654321789',
@@ -159,29 +137,7 @@ VALUES
     'yash2004'
 ),
 
-(   'NB-RT26-9438',
-    'raj',
-    'tripathi',
-    '9674738475',
-    '2004-05-03',
-    'Uttarakhand,India',
-    'Mechanical Engineering',
-    'rajtripathi@northernbridge.lab',
-    'raj2004'
-),
-
-(   'NB-JO26-5724',
-    'jack',
-    'Okafor',
-    '2345678490',
-    '2003-11-12',
-    'jamaica',
-    'Civil Engineering',
-    'jackokafor@northernbridge.lab',
-    'jack2003'
-),
-
-(   'NB-RA26-8681',
+(   'NB-RA26-1005',
     'riya',
     'agarwal',
     '9876512340',
@@ -192,7 +148,18 @@ VALUES
     'riya2004'
 ),
 
-(   'NB-AP26-4737',
+(   'NB-RP26-2001',
+    'Riya',
+    'Patel',
+    '9258792358',
+    '2004-03-21',
+    'Vadodara',
+    'Computer Science',
+    'riyapatel@northernbridge.lab',
+    'riya2004'
+),
+
+(   'NB-AP26-2002',
     'Ananya',
     'pandey',
     '8967452310',
@@ -203,15 +170,147 @@ VALUES
     'ananya2002'
 ),
 
-(   'NB-RP26-2979',
-    'Raghav',
-    'patel',
-    '7865324567',
-    '2004-08-20',
-    'Rajkot, Gujarat, India.',
-    'Information Technology',
-    'raghavpatel@northernbridge.lab',
-    'raghav2004'
+(   'NB-RP26-2003',
+    'Rakesh',
+    'pandya',
+    '8967451398',
+    '2005-10-03',
+    'Pune, Maharashtra, India',
+    'Computer Science',
+    'rakeshpandya@northernbridge.lab',
+    'rakesh2005'
+),
+
+(   'NB-RC26-2004',
+    'Ritesh',
+    'Chaudary',
+    '8967452445',
+    '2004-11-04',
+    'Jaipur, Rajasthan, India',
+    'Computer Science',
+    'riteshchaudary@northernbridge.lab',
+    'ritesh2004'
+),
+
+(   'NB-AK26-2005',
+    'Ayaan',
+    'Khan',
+    '8006852310',
+    '2005-10-09',
+    'West Bengal, India',
+    'Computer Science',
+    'ayaankhan@northernbridge.lab',
+    'ayaan2005'
+),
+
+(   'NB-VS26-3001',
+    'Vivaan',
+    'Shah',
+    '9344665130',
+    '2003-11-08',
+    'Surat',
+    'Civil Engineering',
+    'vivaanshah@northernbridge.lab',
+    'vivaan2003'
+),
+
+(   'NB-JO26-3002',
+    'jack',
+    'Okafor',
+    '2345678490',
+    '2003-11-12',
+    'jamaica',
+    'Civil Engineering',
+    'jackokafor@northernbridge.lab',
+    'jack2003'
+),
+
+(   'NB-JG26-3003',
+    'jay',
+    'Ghosal',
+    '2365458490',
+    '2006-12-11',
+    'Delhi, India',
+    'Civil Engineering',
+    'jayghosal@northernbridge.lab',
+    'jay2006'
+),
+
+(   'NB-RJ26-3004',
+    'Raj',
+    'Jaiswal',
+    '9745678490',
+    '2006-10-11',
+    'Jamnagar, Gujarat, India',
+    'Civil Engineering',
+    'rajjaiswal@northernbridge.lab',
+    'raj2006'
+),
+
+(   'NB-YG26-3005',
+    'yash',
+    'Gohil',
+    '9045678490',
+    '2005-11-12',
+    'Ahmedabad, Gujarat, India',
+    'Civil Engineering',
+    'yashgohil@northernbridge.lab',
+    'yash2005'
+),
+
+(   'NB-KS26-4001',
+    'Kavya',
+    'Singh',
+    '9004567890',
+    '2004-06-17',
+    'Rajkot',
+    'Mechanical Engineering',
+    'kavyasingh@northernbridge.lab',
+    'kavya2004'
+),
+
+(   'NB-RT26-4002',
+    'raj',
+    'tripathi',
+    '9674738475',
+    '2004-05-03',
+    'Uttarakhand,India',
+    'Mechanical Engineering',
+    'rajtripathi@northernbridge.lab',
+    'raj2004'
+),
+
+(   'NB-AB26-4003',
+    'Anmol',
+    'Bhatiya',
+    '9675848475',
+    '2005-06-06',
+    'Uttarakhand,India',
+    'Mechanical Engineering',
+    'anmolbhatiya@northernbridge.lab',
+    'anmol2005'
+),
+
+(   'NB-AB26-4004',
+    'Anjali',
+    'Bhatiya',
+    '9674739476',
+    '2004-04-01',
+    'Jharkhand,India',
+    'Mechanical Engineering',
+    'anjalibhatiya@northernbridge.lab',
+    'anjali2004'
+),
+
+(   'NB-CH26-4005',
+    'Charul',
+    'Hinger',
+    '9673439675',
+    '2005-06-07',
+    'Uttarpradesh,India',
+    'Mechanical Engineering',
+    'charulhinger@northernbridge.lab',
+    'charul2005'
 );
 
 
@@ -225,15 +324,24 @@ VALUES
 
 ('NB-AP26-1001', 72, 81, 65, 74),
 ('NB-RP26-1002', 88, 79, 91, 83),
-('NB-VS26-1003', 61, 70, 55, 68),
-('NB-KS26-1004', 76, 84, 73, 80),
-('NB-AN26-1005', 69, 77, 20, 62),
-('NB-YS26-1006', 70, 85, 20, 50),
-('NB-RT26-9438', 67, 54, 53, 76),
-('NB-JO26-5724', 56, 34, 67, 75),
-('NB-RA26-8681', 55, 67, 45, 50),
-('NB-AP26-4737', 35, 36, 37, 38),
-('NB-RP26-2979', 20, 78, 45, 23);
+('NB-AN26-1003', 61, 70, 55, 68),
+('NB-YS26-1004', 76, 84, 73, 80),
+('NB-RA26-1005', 69, 77, 35, 62),
+('NB-RP26-2001', 70, 85, 36, 50),
+('NB-AP26-2002', 67, 54, 53, 76),
+('NB-RP26-2003', 56, 34, 67, 75),
+('NB-RC26-2004', 55, 67, 45, 50),
+('NB-AK26-2005', 35, 36, 37, 38),
+('NB-VS26-3001', 37, 78, 45, 23),
+('NB-JO26-3002', 72, 81, 65, 74),
+('NB-JG26-3003', 88, 79, 91, 83),
+('NB-RJ26-3004', 35, 36, 37, 38),
+('NB-YG26-3005', 56, 34, 67, 75),
+('NB-KS26-4001', 67, 54, 53, 76),
+('NB-RT26-4002', 69, 77, 35, 62),
+('NB-AB26-4003', 76, 84, 73, 80),
+('NB-AB26-4004', 67, 54, 53, 76),
+('NB-CH26-4005', 35, 36, 37, 38);
 
 
 -- =========================================
