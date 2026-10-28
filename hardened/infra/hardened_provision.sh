@@ -254,7 +254,77 @@ $stmt->bindValue(":department", $argv[3], SQLITE3_TEXT);
 $stmt->execute();
 ' "$DB_PATH" "$ADMIN_USERNAME" "$ADMIN_DEPARTMENT" "$ADMIN_PASSWORD"
 
-echo "  hardened admin account seeded (username: $ADMIN_USERNAME)."
+# Credentials of Mechanical Engineering Admin
+ADMIN2_USERNAME="haley.wong"
+ADMIN2_DEPARTMENT="Mechanical Engineering"
+ADMIN2_PASSWORD="Summer2026!"
+
+php -r '
+$db = new SQLite3($argv[1]);
+$hash = password_hash($argv[4], PASSWORD_DEFAULT);
+$stmt = $db->prepare(
+    "INSERT OR IGNORE INTO admins (username, password_hash, name, number, salary, department)
+     VALUES (:username, :hash, :name, :number, :salary, :department)"
+);
+$stmt->bindValue(":username", $argv[2], SQLITE3_TEXT);
+$stmt->bindValue(":hash", $hash, SQLITE3_TEXT);
+$stmt->bindValue(":name", "Haley Wong", SQLITE3_TEXT);
+$stmt->bindValue(":number", "9457623558", SQLITE3_TEXT);
+$stmt->bindValue(":salary", 75000, SQLITE3_FLOAT);
+$stmt->bindValue(":department", $argv[3], SQLITE3_TEXT);
+$stmt->execute();
+' "$DB_PATH" "$ADMIN2_USERNAME" "$ADMIN2_DEPARTMENT" "$ADMIN2_PASSWORD"
+
+# Credentials of Civil Engineering Admin
+ADMIN3_USERNAME="peter.parker"
+ADMIN3_DEPARTMENT="Civil Engineering"
+ADMIN3_PASSWORD="Spring2026!"
+
+php -r '
+$db = new SQLite3($argv[1]);
+$hash = password_hash($argv[4], PASSWORD_DEFAULT);
+$stmt = $db->prepare(
+    "INSERT OR IGNORE INTO admins (username, password_hash, name, number, salary, department)
+     VALUES (:username, :hash, :name, :number, :salary, :department)"
+);
+$stmt->bindValue(":username", $argv[2], SQLITE3_TEXT);
+$stmt->bindValue(":hash", $hash, SQLITE3_TEXT);
+$stmt->bindValue(":name", "Peter Parker", SQLITE3_TEXT);
+$stmt->bindValue(":number", "9457623569", SQLITE3_TEXT);
+$stmt->bindValue(":salary", 75000, SQLITE3_FLOAT);
+$stmt->bindValue(":department", $argv[3], SQLITE3_TEXT);
+$stmt->execute();
+' "$DB_PATH" "$ADMIN3_USERNAME" "$ADMIN3_DEPARTMENT" "$ADMIN3_PASSWORD"
+
+# Credentials of Computer Engineering Admin
+ADMIN4_USERNAME="emma.novak"
+ADMIN4_DEPARTMENT="Computer Science"
+ADMIN4_PASSWORD="Monsoon2026!"
+
+php -r '
+$db = new SQLite3($argv[1]);
+$hash = password_hash($argv[4], PASSWORD_DEFAULT);
+$stmt = $db->prepare(
+    "INSERT OR IGNORE INTO admins (username, password_hash, name, number, salary, department)
+     VALUES (:username, :hash, :name, :number, :salary, :department)"
+);
+$stmt->bindValue(":username", $argv[2], SQLITE3_TEXT);
+$stmt->bindValue(":hash", $hash, SQLITE3_TEXT);
+$stmt->bindValue(":name", "Emma Novak", SQLITE3_TEXT);
+$stmt->bindValue(":number", "9457623570", SQLITE3_TEXT);
+$stmt->bindValue(":salary", 75000, SQLITE3_FLOAT);
+$stmt->bindValue(":department", $argv[3], SQLITE3_TEXT);
+$stmt->execute();
+' "$DB_PATH" "$ADMIN4_USERNAME" "$ADMIN4_DEPARTMENT" "$ADMIN4_PASSWORD"
+
+echo "  hardened admin account seeded "
+echo "========================================================="
+echo "                     Admin Credentials                   "
+echo "========================================================="
+echo "username: $ADMIN_USERNAME | password: $ADMIN_PASSWORD  "
+echo "username: $ADMIN2_USERNAME | password: $ADMIN2_PASSWORD  "
+echo "username: $ADMIN3_USERNAME | password: $ADMIN3_PASSWORD  "
+echo "username: $ADMIN4_USERNAME | password: $ADMIN4_PASSWORD  "
 
 # ---------------------------------------------------------------------------
 # [7/7] Permissions, restart, verify
@@ -364,6 +434,8 @@ echo " Provisioning complete!"
 echo "======================================"
 echo "  Portal source  : $PORTAL_DIR"
 echo "  Database       : $DB_PATH"
+echo
+
 
 # The lab is considered healthy if at least one adapter serves HTTP 200.
 if [ "$NAT_CODE" != "200" ] && [ "$BRIDGE_CODE" != "200" ]; then
