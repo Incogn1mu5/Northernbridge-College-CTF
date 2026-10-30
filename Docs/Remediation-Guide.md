@@ -1,156 +1,182 @@
-# Remediation Guide (Final)
+# Remediation Guide
 
-**Target:** Northernbridge College Portal — hardened reference build
-**Audience:** Developers who own this code and have never seen it before
-**Companion document:** `docs/findings-report.md` (findings NB-01 – NB-06)
-
----
+Target: Northernbridge College Portal (Hardened Build)
 
 ## 1. How to Use This Guide
 
-### 1.1 Repo layout
+This guide documents the technical fixes for all six findings identified in the Northernbridge College Portal.
 
-| Variant | Location | Brought up by |
-|---|---|---|
-| **Vulnerable build** (unchanged) | application repo, as deployed today | `vagrant up` (default machine, `infra/provision.sh`) |
-| **Hardened build** | `hardened/` | `vagrant up hardened` (explicit, `autostart: false`, `hardened/infra/hardened_provision.sh`) |
+The repository now contains two distinct builds:
+- Vulnerable Build: The default CTF target (`vagrant up`). Used by students.
+- Hardened Build: The verification artifact (`vagrant up hardened`). Never deployed to students. It lives in the `hardened/` directory.
 
-Both machines are defined in one `Vagrantfile` via two `config.vm.define`
-blocks. The vulnerable machine is `primary: true` — a bare `vagrant up`
-still only brings up the CTF target, unchanged. The hardened machine never
-auto-starts and is provisioned, networked, and named independently
-(`northernbridge-hardened` / VirtualBox name `Northernbridge-Hardened`), so
-the two can run side by side without colliding.
+To verify a fix, run the verification commands against the default vulnerable VM first (to prove the test accurately detects the flaw), and then against the hardened VM (to prove the flaw is closed).  
+</br>  
 
-### 1.2 What is deliberately absent from the hardened build
+## 2. Ground Rules for Every Fix
 
-Two things were removed outright rather than fixed, because they have no
-place in a hardened verification build at all:
+When writing or reviewing code for this application, the following non-negotiables apply:
+1. **Authorize on the server:** Never rely on the UI to hide a control. Every request must be authorized on the server side.
+2. **Parameterize all queries:** Never build a database query by concatenating user input into a string.
+3. **Protect configuration files:** Never serve configuration, credential, or environment dotfiles from the web root. Store secrets outside the document root.
+4. **No security by obscurity:** An unlinked route is not a hidden route. Protect routes with real access controls.
+5. **Assume public exposure means compromised:** Any secret served publicly must be rotated immediately.  
+</br>  
 
-- **The entire CTF flag flow.** No `flags` table, no `compliance_notes`
-  table, no `$flag1`/`$flag2`/`$flag3` fetch-and-display code in
-  `index.php`, `dashboard.php`, or `edit-marks.php`. The flag flow belongs
-  to the vulnerable build only.
-- **The decoy `.env` file.** Never written into the hardened document
-  root at all — not hidden better, not moved, simply never created.
+## 3. Finding Remediations
 
----
+### NB-05: SQL Injection in Administrative Search Functionality
 
-## 2. Ground Rules Applied Throughout
+- **The problem:** The student search parameter `?search=` was concatenated directly into the SQL query, allowing an attacker to alter the query logic and bypass intended restrictions.  
+- **Why the obvious fix is not enough:** Attempting to sanitize the input using string escaping (e.g., addslashes or regex blocklists) is fragile and frequently bypassed. The only complete fix is separating the SQL structure from the data.  
+- **The fix:** Replace the concatenated query with a parameterized prepared statement, binding the search input as a value.  
 
-1. Every fix is server-side; nothing relies on hiding a link or a UI
-   element.
-2. Every admin script authenticates and authorizes itself — no script
-   assumes it was only ever reached through a trusted link.
-3. No SQL query is ever built by concatenating user input into a string.
-   Every query is a prepared statement with bound parameters.
-4. No secret-bearing file is ever placed inside the web-servable document
-   root — not `.env`, not anything else.
-5. No credential in the hardened build is ever a value that was exposed in
-   the vulnerable build. The hardened admin password was chosen
-   specifically because it has never appeared anywhere in the vulnerable
-   build's seed data or decoy `.env`.
-6. Obscurity (unlinked routes, unguessable paths) is never treated as a
-   control — every fix below closes the underlying server-side gap, not
-   just the specific path an assessor happened to find.
+*Before (Vulnerable www/admin/edit-marks.php):*
 
----
+``` php
+ 
+$query = "
+    SELECT s.student_id, s.first_name, s.last_name, s.department,
+           m.math, m.cpp, m.python, m.graphics
+    FROM students s
+    LEFT JOIN marks m ON s.student_id = m.student_id
+    WHERE (
+        s.first_name LIKE '%$search%'
+        OR s.last_name LIKE '%$search%'
+        OR s.student_id LIKE '%$search%'
+        OR s.department LIKE '%$search%'
+    ) AND s.student_id LIKE 'NB-%' ORDER BY s.student_id
+";
+$result = $db->query($query);
+```
 
-## 3. Fix Chapters
+*After (Hardened hardened/www/admin/edit-marks.php):*
+``` PHP
+$likePattern = '%' . $search . '%';
+$stmt = $db->prepare('
+    SELECT s.student_id, s.first_name, s.last_name, s.department,
+           m.math, m.cpp, m.python, m.graphics
+    FROM students s
+    LEFT JOIN marks m ON s.student_id = m.student_id
+    WHERE s.first_name LIKE :pattern
+       OR s.last_name LIKE :pattern
+       OR s.student_id LIKE :pattern
+       OR s.department LIKE :pattern
+    ORDER BY s.student_id
+');
+$stmt->bindValue(':pattern', $likePattern, SQLITE3_TEXT);
+$result = $stmt->execute();
+```
 
----
+**Configuration or infrastructure changes:** None.  
+**Migration / rollout notes:** None.  
+**Verification:** Submit a structural test pattern (e.g., ' OR '1'='1) to the search field. The hardened build treats it as literal text and returns no results.  
+**Regression test:** test_admin_search_sqli_rejection  
+**Residual risk:** None.  
+</br>  
 
-### NB-01 — Administrative Interface Discoverable via Directory Enumeration
+### NB-06: Local File Inclusion Through Unvalidated File Path Parameter
 
-**Fix:** a single shared session/authorization gate, `require_admin_session()`
-in `hardened/includes/admin-auth.php`, called as the first line of real
-logic in every admin script. It does two things no inline check did
-reliably: it re-verifies the admin still exists in the database (not just
-that a session flag is set), and it returns the full admin row — including
-`department`, `number`, and `salary` — so no page re-queries it separately.
+- **The problem:** The `id=` parameter evaluated input starting with `/` as an absolute file path and passed it to `file_get_contents()`, allowing the reading of arbitrary server files.  
+- **Why the obvious fix is not enough:** Using a blocklist (e.g., stripping `../` or `/etc/passwd`) fails because attackers can use encoding or alternative paths.
+- **The fix:** Remove the file-reading logic entirely. Replace it with a strict database query lookup that only fetches known student IDs via a helper function.
 
-```php
-// hardened/includes/admin-auth.php
-function require_admin_session(SQLite3 $db): array
-{
-    if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-        header('Location: index.php');
-        exit;
+*Before (Vulnerable www/admin/edit-marks.php):* 
+``` PHP
+if ($edit_id !== '' && str_starts_with($edit_id, '/')) {
+    if (is_file($edit_id) && is_readable($edit_id)) {
+        $file_contents = file_get_contents($edit_id);
     }
-
-    $stmt = $db->prepare('
-        SELECT id, username, name, number, salary, department
-        FROM admins
-        WHERE id = :id
-        LIMIT 1
-    ');
-    $stmt->bindValue(':id', $_SESSION['admin_id'] ?? null, SQLITE3_INTEGER);
-    $result = $stmt->execute();
-    $admin = $result ? $result->fetchArray(SQLITE3_ASSOC) : false;
-
-    if (!$admin) {
-        session_unset();
-        session_destroy();
-        header('Location: index.php');
-        exit;
-    }
-
-    return $admin;
 }
 ```
 
-Every admin script (`dashboard.php`, `edit-marks.php`) now opens with:
+*After (Hardened hardened/www/admin/edit-marks.php):*
+``` PHP
+$selected_student = $edit_id !== ''
+    ? fetch_authorized_student($db, $edit_id, $adminDepartment)
+    : null;
+
+if ($edit_id !== '' && $selected_student === null) {
+    $message = 'Student not found.';
+    $message_type = 'error';
+}
+```
+
+**Configuration or infrastructure changes:** None.  
+**Migration / rollout notes:** None.  
+**Verification:** Request `/admin/edit-marks.php?id=/etc/passwd`. The hardened build returns "Student not found" with no file output.  
+**Regression test:** test_admin_lfi_rejection  
+**Residual risk:** The web user (`www-data`) still requires read access to application files; least privilege must be maintained at the OS level.  
+</br>  
+
+### NB-04: Inadequate Authorization Controls in Restricted Clerk View
+
+- **The problem:** Departmental scoping was only enforced on the default (empty search) query branch. Searching for an out-of-scope student ID returned their record, and updating out-of-scope marks was permitted.
+- **Why the obvious fix is not enough:** Hiding out-of-scope students from the UI table does not prevent an attacker from passing their ID directly into the update POST request.
+- **The fix:** Enforce authorization at the data-access layer by validating the authenticated admin's department against the requested student's department during both the SELECT and UPDATE operations.
+
+*Before (Vulnerable www/admin/edit-marks.php update logic):*
+``` PHP
+$stmt = $db->prepare('
+    UPDATE marks
+    SET math = :math, cpp = :cpp, python = :python, graphics = :graphics
+    WHERE student_id = :student_id
+');
+```
+
+*After (Hardened hardened/www/includes/student-access.php & edit-marks.php):*
+``` PHP
+function fetch_authorized_student(SQLite3 $db, string $studentId, string $adminDepartment): ?array {
+    $stmt = $db->prepare('
+        SELECT s.student_id, s.first_name, s.last_name, s.department,
+               m.math, m.cpp, m.python, m.graphics
+        FROM students s
+        LEFT JOIN marks m ON s.student_id = m.student_id
+        WHERE s.student_id = :student_id AND s.department = :department
+        LIMIT 1
+    ');
+    $stmt->bindValue(':student_id', $studentId, SQLITE3_TEXT);
+    $stmt->bindValue(':department', $adminDepartment, SQLITE3_TEXT);
+    $result = $stmt->execute();
+    $row = $result ? $result->fetchArray(SQLITE3_ASSOC) : false;
+    return $row ?: null;
+}
+```
+`hardened/www/admin/edit-marks.php` calls it directly for the `id=`
+lookup:
 ```php
-require_once __DIR__ . '/../includes/admin-auth.php';
-$admin = require_admin_session($db);
-$adminDepartment = $admin['department'];
+$selected_student = $edit_id !== ''
+    ? fetch_authorized_student($db, $edit_id, $adminDepartment)
+    : null;
 ```
-replacing what were previously separate, inline, independently-written
-session checks and admin-row lookups per file. Route existence or
-discoverability is now irrelevant — every admin script enforces the same
-check itself, regardless of how the request arrived.
+Deliberately, this means **search can surface a record an admin is not permitted to open** — e.g. another department's `NB-*` & `NC-*` student shows up in a search result, but clicking "Edit Marks" on it is denied by this helper. That split is intentional, not a gap: "finding" and "editing" are different operations with different legitimate scopes.  
 
-**Verification:** an unauthenticated request to any admin script redirects
-to `index.php`, never returns admin content.
+**Configuration or infrastructure changes:** Multi-department admin users created in `hardened_seed.sql`.  
+**Migration / rollout notes:** Administrators will lose the ability to `edit` students outside their explicitly assigned department.  
+**Verification:** Log in as an `IT admin` and attempt to edit a Civil Engineering student via direct ID manipulation. The hardened build drops the update.  
+**Regression test:** test_admin_cross_department_authorization  
+**Residual risk:** None.  
+</br>  
 
----
+### NB-03: Weak Authentication Controls Enable Password Spraying
 
-### NB-02 — Sensitive Credentials Exposed in Public Configuration File
-
-**Fix:** no secret-bearing file is ever placed in the hardened document
-root — not relocated, not relabeled, simply never created. The hardened
-build needs no runtime config file at all: `db.php`'s database path is a
-constant, and the one admin credential pair is generated directly into the
-database by the provisioning script (see NB-03), never written to disk as
-a flat file at any point.
-
-**Apache vhost (`hardened/infra/hardened_provision.sh`):**
-```apache
-# Block all dotfiles (.env, .git, etc.) from being served.
-<FilesMatch "^\.">
-    Require all denied
-</FilesMatch>
-```
-This replaced an earlier attempt that had the right intent but a broken
-regex (`^\. $`, which matches nothing real) and an invalid directive
-(`ForceType all denied`, not valid Apache syntax) — both were corrected so
-the rule actually blocks every dotfile, not just the one filename an
-assessor happened to find.
-
-**Verification:** `curl -i http://<hardened-vm>/.env` → `404`/`403`; same
-for any other dotfile pattern.
-
----
-
-### NB-03 — Weak Authentication Controls Enable Password Spraying
-
-**Fix, three parts together:**
+- **The problem:** The admin login lacked rate limiting, allowing infinite password attempts against known usernames.
+- **Why the obvious fix is not enough:** Implementing a CAPTCHA alone is frequently bypassed by automated solvers. Blocking by IP alone can cause collateral denial of service for shared networks.
+- **The fix:** Implement a lockout mechanism tied to a combined `Client IP` and `Username key`, enforce secure password hashing (password_hash), and record failures to a dedicated SQLite table.  
 
 **(a) Passwords are hashed, not compared in plaintext.** The `admins`
-table column is `password_hash`, not `password`, and `index.php` verifies
+table column is renamed to `password_hash` and `index.php` verifies
 with `password_verify()`:
+
+*Before (Vulnerable www/admin/index.php):*
+``` PHP
+if ($admin && hash_equals($admin['password'], $password)) {
+    // login success
+}
+```
+
+*After (Hardened hardened/www/admin/index.php):*
 ```php
-// hardened/www/admin/index.php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -182,42 +208,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ```
-(Everything is wrapped in the `REQUEST_METHOD === 'POST'` check — an
-earlier draft of this file computed `$clientKey` from `$username` *before*
-it was ever read from `$_POST`, which ran on every page load including
-plain GETs. That stray line was removed.)
 
-**(b) Throttling and lockout**, `hardened/includes/login-throttle.php`:
-```php
-const LOGIN_MAX_ATTEMPTS    = 5;
-const LOGIN_LOCKOUT_SECONDS = 300;
+**(b) Throttling and lockout:** 
 
-function login_is_locked_out(SQLite3 $db, string $key): bool { /* ... */ }
-function login_record_failure(SQLite3 $db, string $key): void { /* ... */ }
-function login_clear_attempts(SQLite3 $db, string $key): void { /* ... */ }
+*Added (hardened/www/includes/login-throttle.php)*
+``` PHP
+<?php
+const LOGIN_MAX_ATTEMPTS     = 5;
+const LOGIN_LOCKOUT_SECONDS  = 300;
+
+function login_is_locked_out(SQLite3 $db, string $key): bool
+{
+    $stmt = $db->prepare('SELECT attempts, last_attempt FROM login_attempts WHERE attempt_key = :key');
+    $stmt->bindValue(':key', $key, SQLITE3_TEXT);
+    $row = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+
+    if (!$row) {
+        return false;
+    }
+
+    $withinWindow = (time() - (int)$row['last_attempt']) < LOGIN_LOCKOUT_SECONDS;
+    return $withinWindow && (int)$row['attempts'] >= LOGIN_MAX_ATTEMPTS;
+}
+
+function login_record_failure(SQLite3 $db, string $key): void
+{
+    $stmt = $db->prepare('
+        INSERT INTO login_attempts (attempt_key, attempts, last_attempt)
+        VALUES (:key, 1, :now)
+        ON CONFLICT(attempt_key) DO UPDATE SET
+            attempts = attempts + 1,
+            last_attempt = :now
+    ');
+    $stmt->bindValue(':key', $key, SQLITE3_TEXT);
+    $stmt->bindValue(':now', time(), SQLITE3_INTEGER);
+    $stmt->execute();
+}
+
+function login_clear_attempts(SQLite3 $db, string $key): void
+{
+    $stmt = $db->prepare('DELETE FROM login_attempts WHERE attempt_key = :key');
+    $stmt->bindValue(':key', $key, SQLITE3_TEXT);
+    $stmt->execute();
+}
 ```
-backed by a new table:
-```sql
-CREATE TABLE IF NOT EXISTS login_attempts (
-    attempt_key  TEXT PRIMARY KEY,
-    attempts     INTEGER NOT NULL DEFAULT 0,
-    last_attempt INTEGER NOT NULL
-);
+
+
+**(c) Admin credential hashed automatically at provisioning time**
+No value copied from the vulnerable build's exposed `.env`/seed data — All admin creds are hashed and stored in to the database:
+
+*Before (Vulnerable infra/provision.sh):*
+``` bash
+cat > "$DECOY_ENV" <<'ENV'
+APP_ENV=production
+APP_URL=http://northernbridge.local
+APP_DEBUG=false
+
+DB_CONNECTION=sqlite
+DB_DATABASE=/var/www/html/database/college.db
+
+helen.carter:Winter2026!
+anil.mehta:Northbridge@2026
+priya.kannan:CollegeAdmin!99
+david.okafor:Admin#2024
+sara.ahmed:PortalPass!7
+mohammed.khan:SecureIT@21
+lina.farouk:NBCadmin2023
+rohan.singh:FallBack!88
+emily.wong:Winter2025!
+gregory.adams:Admin1@one
+fatima.hassan:Autumn#2022
+peter.novak:March2026!
+ENV
+echo "  decoy .env written."
 ```
 
-**(c) A fixed, known, admin credential, hashed automatically
-at provisioning time** — not a fresh random password every build (hard to
-test against), and a value copied from the vulnerable build's exposed
-`.env`/seed data (exactly same as early draft of the provisioning
-script made by reusing `'Winter2026!'`, the vulnerable build's actual
-leaked password — hashed and stored in to the database:
+*After (Hardened hardened/infra/hardened_provision.sh):*
 ```bash
 # hardened/infra/hardened_provision.sh — step [6/7], runs AFTER schema
 # creation (step [5/7]), not before — an earlier draft had this backwards,
 # which failed on a fresh VM because the admins table didn't exist yet.
 ADMIN_USERNAME="helen.carter"
 ADMIN_DEPARTMENT="Information Technology"
-ADMIN_PASSWORD="Winter2026!"
+ADMIN_PASSWORD="Autumn2026!"
 
 php -r '
 $db = new SQLite3($argv[1]);
@@ -235,196 +308,107 @@ $stmt->bindValue(":department", $argv[3], SQLITE3_TEXT);
 $stmt->execute();
 ' "$DB_PATH" "$ADMIN_USERNAME" "$ADMIN_DEPARTMENT" "$ADMIN_PASSWORD"
 ```
-`hardened_seed.sql` defines the `admins` table's **schema only** — no
-`INSERT` for the admin row lives there. An earlier draft had *both*
-`seed.sql` and this PHP step each inserting the same username, which is a
-conflict by construction (`INSERT OR IGNORE` means whichever ran first
-silently wins and the other does nothing) — and the `seed.sql` copy
-additionally put the plaintext leaked password directly into the
-`password_hash` column, which isn't a hash at all and would never have
-verified against any password. There is now exactly one place the admin
-account is created.
 
-**Verification:** 6 consecutive failed logins → 6th rejected regardless of
-correctness; no row in `admins` matches a plaintext-password pattern;
-`password_verify()` succeeds for the known seeded password.
+**Configuration or infrastructure changes:** Added login_attempts table to hardened_seed.sql. Migrated plaintext password column to password_hash.  
+**Migration / rollout notes:** Existing plaintext passwords in the database must be re-hashed using password_hash() prior to deployment.  
+**Verification:** Issue 6 incorrect login requests for the same user. The 6th request will return "Too many attempts" regardless of password correctness.  
+**Regression test:** test_admin_login_rate_limiting  
+**Residual risk:** Distributed attacks using rotating IP addresses can still attempt slow sprays.  
+</br>  
 
----
+### NB-02: Sensitive Credentials Exposed in Public Configuration File
 
-### NB-04 — Inadequate Authorization Controls in Restricted Record View
+- **The problem:** The `.env` file containing administrative credentials was served publicly as text/plain from the Apache document root.
+- **Why the obvious fix is not enough:** Disabling directory listings does not stop a user from requesting the file directly by name.
+- **The fix:** Stop generating the `.env` file within `/var/www/html/`. Implement an explicit Apache rule to deny HTTP access to all dotfiles as a defense-in-depth measure.
 
-**Final agreed model** (narrower than the default dashboard view, and
-narrower than search — three distinct, deliberate scopes, not one rule
-applied everywhere):
+**Before (Vulnerable Apache config in infra/provision.sh):**
+```Apache
+<FilesMatch "^\.env$">
+    ForceType text/plain
+</FilesMatch>
+```
 
-| Feature | Scope |
-|---|---|
-| Dashboard default roster | Admin's own department, `NB-*` only |
-| Search (by name or ID) | **Unrestricted** — any department's `NB-*`, plus `NC-*` (see NB-05) |
-| Open/edit a specific record (`?id=`) | `NC-*` (any) **or** `NB-*` in the admin's own department only |
+**After (Hardened Apache config in hardened_provision.sh):**
+``` Apache
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+``` 
 
-The "open/edit" scope is enforced by a single shared helper,
-`hardened/includes/student-access.php`, rather than by the dashboard's and
-edit-marks' own independent copies of the rule — the original codebase had
-exactly this restriction written out already, just commented out and
-therefore never active:
-```php
-function fetch_authorized_student(SQLite3 $db, string $studentId, string $adminDepartment): ?array
-{
-    $stmt = $db->prepare('
-        SELECT
-            s.student_id, s.first_name, s.last_name, s.department,
-            m.math, m.cpp, m.python, m.graphics
-        FROM students s
-        LEFT JOIN marks m ON s.student_id = m.student_id
-        WHERE s.student_id = :student_id
-          AND (
-                s.student_id LIKE \'NC-%\'
-                OR s.department = :department
-              )
-        LIMIT 1
-    ');
-    $stmt->bindValue(':student_id', $studentId, SQLITE3_TEXT);
-    $stmt->bindValue(':department', $adminDepartment, SQLITE3_TEXT);
-    $result = $stmt->execute();
-    $row = $result ? $result->fetchArray(SQLITE3_ASSOC) : false;
-    return $row ?: null;
+**Configuration or infrastructure changes:** The decoy file is completely omitted from the hardened provisioning script.  
+**Migration / rollout notes:** Any credentials previously exposed in the old `.env` file must be considered compromised and rotated immediately (already executed in the hardened seed).  
+**Verification:** Attempt to `curl -i http://<vm-IP>/.env`. The hardened build returns 403 Forbidden or 404 Not Found.
+**Regression test:** test_env_file_accessibility  
+**Residual risk:** None.  
+</br>  
+
+### NB-01: Administrative Interface Discoverable via Directory Enumeration
+
+- **The problem:** The administrative routes lacked comprehensive session validation, relying on obscurity (unlinked pages) for protection.
+- **Why the obvious fix is not enough:** Moving the `/admin/` directory to a new hidden folder (e.g., `/staff-portal-xyz/`) just restarts the clock until enumeration tools find the new path.
+- **The fix:** Centralize administrative session validation into a single required helper function require_admin_session() loaded at the top of every restricted page.
+
+**Before (Vulnerable www/admin/dashboard.php):**
+``` PHP
+if ( !isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: index.php');
+    exit;
 }
 ```
-`hardened/www/admin/edit-marks.php` calls it directly for the `id=`
-lookup:
-```php
-$selected_student = $edit_id !== ''
-    ? fetch_authorized_student($db, $edit_id, $adminDepartment)
-    : null;
-```
-Deliberately, this means **search can surface a record an admin is not
-permitted to open** — e.g. another department's `NB-*` student shows up
-in a search result, but clicking "Edit Marks" on it is denied by this
-helper. That split is intentional, not a gap: "finding" and "editing" are
-different operations with different legitimate scopes.
 
-**Verification:** a clerk from department A requesting a known
-department-B student via `?id=` gets "Student not found"; the same clerk
-can still find that student through search.
-
----
-
-### NB-05 — SQL Injection in Administrative Search Functionality
-
-**Fix:** parameterized query, with the search scope matching the model
-above — no `'NB-%'` restriction, no department restriction, since search
-is deliberately the broad-lookup tool (`id=` handles the narrow,
-authorization-enforcing case):
-```php
-// hardened/www/admin/edit-marks.php — search branch
-$likePattern = '%' . $search . '%';
-$stmt = $db->prepare('
-    SELECT
-        s.student_id, s.first_name, s.last_name, s.department,
-        m.math, m.cpp, m.python, m.graphics
-    FROM students s
-    LEFT JOIN marks m ON s.student_id = m.student_id
-    WHERE
-        s.first_name LIKE :pattern
-        OR s.last_name LIKE :pattern
-        OR s.student_id LIKE :pattern
-        OR s.department LIKE :pattern
-    ORDER BY s.student_id
-');
-$stmt->bindValue(':pattern', $likePattern, SQLITE3_TEXT);
-
-$result = $stmt->execute();
-if ($result) {
-    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-        $students[] = $row;
+**After (Hardened hardened/www/includes/admin-auth.php):**
+``` PHP
+function require_admin_session(SQLite3 $db): array {
+    if (empty($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+        header('Location: index.php');
+        exit;
     }
+    // Verifies admin still exists in DB and fetches role data
+    $stmt = $db->prepare('SELECT id, username, name, number, salary, department FROM admins WHERE id = :id LIMIT 1');
+    // ... execution
+    return $admin;
 }
+
 ```
-`$search` is bound as a parameter, never concatenated into SQL text — no
-input can alter the query's structure regardless of content. The default
-(no search term) view is untouched from its original, already-correct
-form: parameterized, `'NB-%'`-filtered, department-scoped, `LIMIT 5`.
+Every admin script (`dashboard.php`, `edit-marks.php`) now opens with:
+```php
+require_once __DIR__ . '/../includes/admin-auth.php';
+$admin = require_admin_session($db);
+$adminDepartment = $admin['department'];
+```
 
-**A note on how this was arrived at:** an earlier draft added department
-scoping to the search branch, modeled on the default view. That was
-corrected after confirming the intended behavior directly — search is
-meant to be the broad tool, with authorization enforced only at the point
-of opening a record (NB-04), not at the point of finding one.
-
-**Verification:** a structural-alteration test input returns no change in
-result-set shape (confirms parameterization); a search by name/ID
-correctly returns matches from other departments and from `NC-*` records
-(confirms the intended scope, not an accidental restriction).
-
----
-
-### NB-06 — Local File Inclusion Through Unvalidated File Path Parameter
-
-**Fix:** the file-path branch of the `id` parameter was deleted entirely,
-not filtered or guarded further. There is no `file_get_contents()`,
-`readfile()`, `fopen()`, or `str_starts_with($edit_id, '/')` anywhere in
-the hardened `edit-marks.php` — confirmed by grep across the full file,
-not just visual inspection. `$edit_id` is used for exactly one thing: as
-the argument to `fetch_authorized_student()` above.
-
-An earlier draft of this fix removed the LFI code in one place in the file
-but left a second, near-identical copy of it elsewhere (plus the removed
-code had briefly been replaced by a misplaced copy of the search-query fix
-pasted into the wrong branch, which did nothing useful and also didn't
-close the vulnerability). The final version has neither problem: a single
-`grep -n "file_get_contents\|str_starts_with"` across the file returns no
-matches.
-
-**Verification:** `curl -b "<session>" "http://<hardened-vm>/admin/edit-marks.php?id=/etc/hostname"` returns the normal "Student not found" response, with no file content anywhere in the body.
-
----
+**Configuration or infrastructure changes:** None.  
+**Migration / rollout notes:** None.  
+**Verification:** Attempt to access `/admin/dashboard.php` without logging in. The hardened build immediately redirects to the login page without exposing restricted content.  
+**Regression test:** test_admin_auth_redirection  
+**Residual risk:** Administrative panels remain exposed to the public internet. Defense in depth suggests placing them behind a VPN or internal network segment.  
+</br>  
 
 ## 4. Summary Table
+ID | Fix Summary | Code Location | Verification Command | Regression Test 
+-|-|-|-|-
+NB-05 | Replace concatenation with parameterized query. | hardened/www/admin/edit-marks.php | curl -s "http://<IP>/admin/edit-marks.php?search=' OR '1'='1" | test_admin_search_sqli_rejection
+NB-06 | Remove file_get_contents and strict-match DB IDs. | hardened/www/admin/edit-marks.php | curl -s "http://<IP>/admin/edit-marks.php?id=/etc/passwd" | test_admin_lfi_rejection
+NB-04 | Enforce department scope via DB WHERE clauses. | hardened/www/includes/student-access.php | Test out-of-department student ID modification via POST. | test_admin_cross_department_authorization
+NB-03 | Apply lockout table tracking and password_hash. | hardened/www/includes/login-throttle.php | Send 6 bad login POST requests and observe lockout message. | test_admin_login_rate_limiting
+NB-02 | Remove .env and deny dotfiles in Apache config. | hardened/infra/hardened_provision.sh | curl -I "http://<IP>/.env" | test_env_file_accessibility
+NB-01 | Apply centralized session DB verification. | hardened/www/includes/admin-auth.php | curl -I "http://<IP>/admin/dashboard.php" | test_admin_auth_redirection  
+</br>  
 
-| ID | Fix | Where | Key correction made during implementation |
-|---|---|---|---|
-| NB-01 | Shared `require_admin_session()` gate on every admin script | `includes/admin-auth.php` | Earlier drafts `require`'d the file but never called it — old inline checks were still live |
-| NB-02 | No secret file ever placed in docroot; dotfiles blocked at vhost | `hardened_provision.sh` (vhost block) | Vhost regex/directive were initially broken (`^\. $`, invalid `ForceType all denied`) |
-| NB-03 | Hashed passwords, throttling/lockout, fixed non-leaked seed credential, hash computed automatically at provision time | `admin/index.php`, `includes/login-throttle.php`, `hardened_provision.sh` | `$username` read-before-POST-check bug; admin-seed step ran before schema existed; seed credential briefly reused the vulnerable build's leaked password in two different places |
-| NB-04 | `fetch_authorized_student()` — `NC-*` any, `NB-*` own department only, for direct open/edit | `includes/student-access.php` | Confirmed deliberately narrower than search, not equal to it |
-| NB-05 | Parameterized search query, intentionally unrestricted by department/prefix | `admin/edit-marks.php` | An interim version wrongly added department scoping to search; corrected to match the agreed model |
-| NB-06 | File-path branch of `id=` deleted entirely | `admin/edit-marks.php` | Two separate leftover copies of the LFI code (plus a misplaced search-fix paste) were found and removed in review before the final clean version |
+## 5. Fix Ordering
 
-**Cross-cutting, not tied to one finding:** all CTF flag code (`flags`
-table, `compliance_notes` table, `$flag1`/`$flag2`/`$flag3` fetch/display)
-removed from `index.php`, `dashboard.php`, `edit-marks.php`, and
-`hardened_seed.sql` — the flag flow belongs to the vulnerable build only.
+When applying these fixes to production systems, sequence them based on exploitability and independence:
+1. **NB-05 (SQLi) & NB-06 (LFI):** Remediate immediately. These are Critical, zero-authentication-dependency data/file extraction vectors.
+2. **NB-02 (.env Exposure):** Remediate immediately. Close the credential leakage stopping attackers from bypassing authentication.
+3. **NB-03 (Auth/Spray):** Apply rate limiting and credential hashing.
+4. **NB-04 (Authorization):** Enforce data access scoping on the backend.
+5. **NB-01 (Session Centralization):** Standardize the routing protection.  
+</br>  
 
----
+## 6. Regression Test Suite Guide
 
-## 5. Supporting Infrastructure Fixes
-
-These aren't findings in `docs/findings-report.md`, but were necessary to
-actually build and run the hardened artifact correctly, and are part of
-the same body of work:
-
-- **`Vagrantfile`** restructured from one implicit machine into two
-  explicit `config.vm.define` blocks (`vulnerable`, `primary: true`;
-  `hardened`, `autostart: false`), each with its own hostname, VirtualBox
-  VM name, dev-mode synced-folder source (`./www` vs `./hardened/www`),
-  and provisioner path — so `vagrant up hardened` is possible at all and
-  never collides with or auto-starts alongside the CTF target.
-- **Provisioning step order** in `hardened_provision.sh` corrected so
-  database/schema creation runs before admin-account seeding, not after.
-- **Bridged-adapter DHCP race** — the original `sleep 2` before checking
-  for a bridged IP was a fixed-time guess, and `ubuntu/jammy64`'s
-  cloud-init netplan config frequently doesn't cover the second NIC
-  Vagrant's `public_network` adds at all. Fixed with an explicit
-  all-interfaces DHCP netplan override plus a polling loop instead of a
-  single sleep.
-- **IP/access report now re-runs on every boot**, not just the first
-  provision — split into its own `run: "always"` shell provisioner
-  (`infra/report-access.sh`) so `vagrant halt` → `vagrant up` still shows
-  current NAT/Bridge addresses, since Vagrant's normal provisioners only
-  execute once.
-- **Startup banner** de-duplicated (Vagrant evaluates the Vagrantfile
-  multiple times per invocation, re-running any bare `puts`) and split
-  into mode-correct text per machine: `CHALLENGE MODE` vs `DEVELOPMENT
-  MODE` for the vulnerable build, `Hardened Build` vs `Hardened -
-  DEVELOPMENT MODE` for the hardened one.
+To ensure these vulnerabilities do not silently return in future commits, an automated HTTP test suite runs against the application endpoints.
+- **Execution:** Run the test suite via the CI/CD pipeline against the deployed container.
+- **Success Criteria:** Every test asserting vulnerability absence (e.g., expecting a 403 or empty data set instead of a 200 or leaked data) must pass.
+- **Failure Protocol:** If a test fails, the deployment pipeline must block the build until the endpoint logic is corrected to pass the assertion. The exact same test suite is run against the vulnerable build, where it is expected to fail entirely, proving the tests are properly calibrated.
