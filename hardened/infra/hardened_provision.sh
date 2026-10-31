@@ -233,7 +233,7 @@ log " [6/7] Seeding hardened admin account..."
 
 ADMIN_USERNAME="helen.carter"
 ADMIN_DEPARTMENT="Information Technology"
-ADMIN_PASSWORD="Winter2026!"
+ADMIN_PASSWORD="Autumn2026!"
 # LAB-ONLY verification credential for the hardened build. Never given to
 # students, never reused from the vulnerable build's seed or decoy data,
 # not a real person's password.
