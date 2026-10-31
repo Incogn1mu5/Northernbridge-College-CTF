@@ -52,19 +52,23 @@ $result = $db->query($query);
 
 *After (Hardened hardened/www/admin/edit-marks.php):*
 ``` PHP
-$likePattern = '%' . $search . '%';
-$stmt = $db->prepare('
-    SELECT s.student_id, s.first_name, s.last_name, s.department,
-           m.math, m.cpp, m.python, m.graphics
-    FROM students s
-    LEFT JOIN marks m ON s.student_id = m.student_id
-    WHERE s.first_name LIKE :pattern
-       OR s.last_name LIKE :pattern
-       OR s.student_id LIKE :pattern
-       OR s.department LIKE :pattern
-    ORDER BY s.student_id
-');
-$stmt->bindValue(':pattern', $likePattern, SQLITE3_TEXT);
+ $likePattern = '%' . $search . '%';
+
+    $stmt = $db->prepare('
+        SELECT s.student_id, s.first_name, s.last_name, s.department, m.math, m.cpp, m.python, m.graphics
+        FROM students s
+        LEFT JOIN marks m ON s.student_id = m.student_id
+        WHERE ( s.first_name LIKE :pattern
+            OR s.last_name LIKE :pattern
+            OR s.student_id LIKE :pattern
+            OR s.department LIKE :pattern
+        ) AND s.department = :department
+        ORDER BY s.student_id
+    ');
+
+    $stmt->bindValue(':pattern', $likePattern, SQLITE3_TEXT);
+    // Bind the department variable to enforce the boundary
+    $stmt->bindValue(':department', $adminDepartment, SQLITE3_TEXT);
 $result = $stmt->execute();
 ```
 
@@ -124,7 +128,7 @@ $stmt = $db->prepare('
 ');
 ```
 
-*After (Hardened hardened/www/includes/student-access.php & edit-marks.php):*
+*After (Hardened hardened/www/includes/student-access.php):*
 ``` PHP
 function fetch_authorized_student(SQLite3 $db, string $studentId, string $adminDepartment): ?array {
     $stmt = $db->prepare('
