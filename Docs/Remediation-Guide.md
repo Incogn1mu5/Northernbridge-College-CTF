@@ -7,8 +7,10 @@ Target: Northernbridge College Portal (Hardened Build)
 This guide documents the technical fixes for all six findings identified in the Northernbridge College Portal.
 
 The repository now contains two distinct builds:
-- Vulnerable Build: The default CTF target (`vagrant up`). Used by students.
-- Hardened Build: The verification artifact (`vagrant up hardened`). Never deployed to students. It lives in the `hardened/` directory.
+Builds | Purpose
+-|-
+Vulnerable Build | The default CTF target (`vagrant up`). Used by students.
+Hardened Build | The verification artifact (`vagrant up hardened`). Never deployed to students. It lives in the `hardened/` directory.
 
 To verify a fix, run the verification commands against the default vulnerable VM first (to prove the test accurately detects the flaw), and then against the hardened VM (to prove the flaw is closed).  
 </br>  
@@ -153,9 +155,8 @@ $selected_student = $edit_id !== ''
     ? fetch_authorized_student($db, $edit_id, $adminDepartment)
     : null;
 ```
-Deliberately, this means **search can surface a record an admin is not permitted to open** — e.g. another department's `NB-*` & `NC-*` student shows up in a search result, but clicking "Edit Marks" on it is denied by this helper. That split is intentional, not a gap: "finding" and "editing" are different operations with different legitimate scopes.  
 
-**Configuration or infrastructure changes:** Multi-department admin users created in `hardened_seed.sql`.  
+**Configuration or infrastructure changes:** Multi-department admin users created in `hardened_seed.sql`. **search can't surface a record an admin is not permitted to open/edit** — e.g. searching another department's `NB-*` & `NC-*` student shows up nothing in a search result, it is denied by this helper.
 **Migration / rollout notes:** Administrators will lose the ability to `edit` students outside their explicitly assigned department.  
 **Verification:** Log in as an `IT admin` and attempt to edit a Civil Engineering student via direct ID manipulation. The hardened build drops the update.  
 **Regression test:** test_admin_cross_department_authorization  
@@ -392,12 +393,12 @@ $adminDepartment = $admin['department'];
 ## 4. Summary Table
 ID | Fix Summary | Code Location | Verification Command | Regression Test 
 -|-|-|-|-
-NB-05 | Replace concatenation with parameterized query. | hardened/www/admin/edit-marks.php | curl -s "http://<IP>/admin/edit-marks.php?search=' OR '1'='1" | test_admin_search_sqli_rejection
-NB-06 | Remove file_get_contents and strict-match DB IDs. | hardened/www/admin/edit-marks.php | curl -s "http://<IP>/admin/edit-marks.php?id=/etc/passwd" | test_admin_lfi_rejection
-NB-04 | Enforce department scope via DB WHERE clauses. | hardened/www/includes/student-access.php | Test out-of-department student ID modification via POST. | test_admin_cross_department_authorization
-NB-03 | Apply lockout table tracking and password_hash. | hardened/www/includes/login-throttle.php | Send 6 bad login POST requests and observe lockout message. | test_admin_login_rate_limiting
-NB-02 | Remove .env and deny dotfiles in Apache config. | hardened/infra/hardened_provision.sh | curl -I "http://<IP>/.env" | test_env_file_accessibility
-NB-01 | Apply centralized session DB verification. | hardened/www/includes/admin-auth.php | curl -I "http://<IP>/admin/dashboard.php" | test_admin_auth_redirection  
+NB-05 | Replace concatenation with parameterized query. | `hardened/www/admin/edit-marks.php` | curl -s "http://<IP>/admin/edit-marks.php?search=' OR '1'='1" | test_admin_search_sqli_rejection
+NB-06 | Remove file_get_contents and strict-match DB IDs. | `hardened/www/admin/edit-marks.php` | curl -s "http://<IP>/admin/edit-marks.php?id=/etc/passwd" | test_admin_lfi_rejection
+NB-04 | Enforce department scope via DB WHERE clauses. | `hardened/www/includes/student-access.php` | Test out-of-department student ID modification via POST. | test_admin_cross_department_authorization
+NB-03 | Apply lockout table tracking and password_hash. | `hardened/www/includes/login-throttle.php` | Send 6 bad login POST requests and observe lockout message. | test_admin_login_rate_limiting
+NB-02 | Remove .env and deny dotfiles in Apache config. | `hardened/infra/hardened_provision.sh` | curl -I "http://<IP>/.env" | test_env_file_accessibility
+NB-01 | Apply centralized session DB verification. | `hardened/www/includes/admin-auth.php` | curl -I "http://<IP>/admin/dashboard.php" | test_admin_auth_redirection  
 </br>  
 
 ## 5. Fix Ordering
