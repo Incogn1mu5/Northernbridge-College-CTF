@@ -1,4 +1,4 @@
-# Team Retrospective — Northernbridge College Portal Lab
+# Team Retrospective
 
 **Project:** Northernbridge College Portal CTF Lab  
 **Phases covered:** 1–5  
@@ -85,7 +85,7 @@ Priority | Change | Owner | Effort | Rationale
 -|-|-|-|-
 P0 | Make "reset between students" one command | Lab Maintainer | S (2-4 hours) | Add scripts/reset-lab.sh that re-runs the documented reset and runs a minimal sanity check (home loads, /admin behavior correct for vulnerable build).
 P1 | Add a short "hidden vs protected" micro-exercise | Instructor | S (1-2 hours) | Explicitly quiz students on NB-01 before moving to NB-02 to solidify the mental model.
-P1 | Tighten docs cross-references | Tech Writer/Dev | S (1-2 hours) | Ensure docs/learning-objectives.md is referenced from findings/remediation/retrospective (already done) and remove any accidental duplication.
+P1 | Tighten docs cross-references | Tech Writer/Dev | S (1-2 hours) | Ensure `Scenarios/NCC_Learning-Objectives.md` is referenced from findings/remediation/retrospective (already done) and remove any accidental duplication.
 P1 | Harden runbook with "first 3 commands on failure" | Lab Maintainer | S (1-2 hours) | Expand runbooks/lab-operations.md logs/diagnostics based on the Vagrant/networking issues we hit.
 P1 | Regular sync meetings (Meet/Zoom) | Project Lead/Instructor | S (Ongoing) | From the team side, regular meetups through Meet or Zoom would greatly help maintain communication, clarify requirements earlier, and resolve blockers faster.
 P1 | Provide more upfront examples for new tools | Instructor/Mentor | S (1-2 hours) | For tools like Vagrant that are new to some team members, a short walkthrough/demo at the start would help flatten the learning curve.
