@@ -1,0 +1,133 @@
+name: Instructor Feedback
+description: Submit session feedback after running a cohort.
+title: "[Feedback]: Cohort "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill out this form after each cohort/session to track trends and lab effectiveness over time.
+
+  - type: input
+    id: cohort_id
+    attributes:
+      label: Cohort/session ID
+    validations:
+      required: true
+
+  - type: input
+    id: session_dates
+    attributes:
+      label: Date(s)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: builds_used
+    attributes:
+      label: Builds used
+      options:
+        - Vulnerable only
+        - Hardened demo
+    validations:
+      required: true
+
+  - type: textarea
+    id: timing
+    attributes:
+      label: Timing
+      description: Fill in the approximate time taken (in minutes) and any notes for each stage.
+      value: |
+        - Recon / find `/admin`: 
+        - `.env` discovery & creds: 
+        - Login/spraying: 
+        - Restricted view / authz: 
+        - SQLi search: 
+        - LFI via `id=`: 
+        - Wrap-up / discussion: 
+    validations:
+      required: true
+
+  - type: textarea
+    id: sticking_longest
+    attributes:
+      label: What did students get stuck on the longest?
+    validations:
+      required: true
+
+  - type: textarea
+    id: hints_used
+    attributes:
+      label: Which hints were used (and by how many groups)?
+
+  - type: textarea
+    id: verbal_terms
+    attributes:
+      label: What terms had to be explained verbally?
+
+  - type: textarea
+    id: hidden_vs_protected
+    attributes:
+      label: Did anyone confuse "hidden" vs "protected"? (Y/N + notes)
+
+  - type: textarea
+    id: common_questions
+    attributes:
+      label: Most common questions
+
+  - type: dropdown
+    id: learning_outcomes
+    attributes:
+      label: Did students reach the intended learning outcome?
+      options:
+        - "Yes"
+        - "No"
+        - "Partial"
+    validations:
+      required: true
+
+  - type: textarea
+    id: off_track_unsafely
+    attributes:
+      label: Did anyone go off-track unsafely? (Y/N + action taken)
+
+  - type: dropdown
+    id: rating_effectiveness
+    attributes:
+      label: Overall lab effectiveness (1-5, 5=best)
+      options: ["5", "4", "3", "2", "1"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: rating_clarity
+    attributes:
+      label: Clarity of instructions (1-5, 5=best)
+      options: ["5", "4", "3", "2", "1"]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: time_balance
+    attributes:
+      label: Time balance
+      options:
+        - Too rushed
+        - OK
+        - Too long
+    validations:
+      required: true
+
+  - type: textarea
+    id: one_change
+    attributes:
+      label: One change to try next time
+    validations:
+      required: true
+
+  - type: textarea
+    id: one_keep
+    attributes:
+      label: One thing to keep
+    validations:
+      required: true
