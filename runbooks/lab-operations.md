@@ -3,8 +3,8 @@
 **Audience:** Whoever runs or maintains this lab next  
 **Purpose:** Build, verify, reset, update, and hand over the lab with no archaeology  
 **Last updated:** Phase 5 (Final)
-
 ---
+</br>  
 
 ## 1. What this is
 
@@ -18,9 +18,8 @@ There are **two separate build variants**:
 | **Hardened (verification artifact)** | `hardened/www/` | `hardened/infra/hardened_provision.sh` | **For verification only.** Never hand to students. Proves all findings are fixable. | 
 
 > **Rule:** The two builds are separate artifacts. There is no runtime "vulnerable mode" switch. 
-
 ---
-
+</br>  
 
 ## 2. Prerequisites
 
@@ -33,18 +32,16 @@ There are **two separate build variants**:
 ### Required tools
 | Tool | Notes |
 | :-- | :-- |
-| [Vagrant 2.4.9](https://www.vagrantup.com/) | Used to provision the VM. |
-| [VirtualBox 7.2.4](https://www.virtualbox.org/) | Hypervisor used by the provided `Vagrantfile`. Other providers may work but are untested. |
+| [Vagrant 2.4.9](https://developer.hashicorp.com/vagrant/install) | Used to provision the VM. |
+| [VirtualBox 7.2.4](https://www.virtualbox.org/wiki/Download_Old_Builds_7_2) | Hypervisor used by the provided `Vagrantfile`. Other providers may work but are untested. |
 | Git (optional) | Only needed if using non-dev mode cloning. Dev mode uses synced folders. |
 
 ### Student prerequisites
 - A browser or `curl` 
 - Basic web fundamentals (routes, forms, HTTP) and scanning tool.
 - No special tools are required to complete the intended path. 
-
-
 ---
-
+</br>  
 
 ## 3. Build the lab (vulnerable CTF target)
 
@@ -78,10 +75,8 @@ curl -i http://<VM_IP>/
 ```
 
 A healthy vulnerable build should return HTTP 200 with the Northernbridge College Portal homepage. 
-
-
 ---
-
+</br>  
 
 ## 4. Verify the lab
 
@@ -96,11 +91,9 @@ Run these checks after a fresh build to confirm the lab is in a known-good, expl
 | **DB present** | SSH in: `ls -la /var/lib/northernbridge/college.db` | File exists, owned by `www-data` |
 | **Flag exists outside DB** | SSH in: `ls -la /opt/northernbridge/flag.txt` | Exists, `root:www-data`, mode `640` |
 
-> See [`docs/Findings-Report.md`](../docs/Findings-Report.md) for the full reproduction patterns. Do **not** copy weaponized payloads into public student materials. 
-
-
+> See [`Docs/Findings-Report.md`](https://github.com/Incogn1mu5/Northernbridge-College-CTF/blob/29e0778855967dcf5a6a703e0924cb8a05d0164d/Docs/Findings-Report.md) for the full reproduction patterns. Do **not** copy weaponized payloads into public student materials.  
 ---
-
+</br>  
 
 ## 5. Reset between students and between cohorts
 
@@ -120,10 +113,8 @@ This reprovisions from scratch. The decoy `.env`, database, and flag will be reg
 2. Confirm `/admin/` is still discoverable
 3. Confirm `/.env` is still retrievable
 4. Confirm the database is freshly seeded
-
-
----
-
+---  
+</br>  
 
 ## 6. Build the hardened variant (verification only)
 
@@ -147,13 +138,12 @@ The `hardened` machine is defined with `autostart: false`, so it will not start 
 | **Authz enforced** | Authenticated clerk requests out-of-scope student via `?id=` | "Student not found" / no rows returned (not exposed) |
 | **LFI closed** | `curl -b "<session>" "http://<HARDENED_VM_IP>/admin/edit-marks.php?id=/etc/hostname"` | Normal response, **no** file contents |
 
-See [`docs/Remediation-Guide.md`](../docs/Remediation-Guide.md) for full verification details.
+See [`Docs/Remediation-Guide.md`](https://github.com/Incogn1mu5/Northernbridge-College-CTF/blob/29e0778855967dcf5a6a703e0924cb8a05d0164d/Docs/Remediation-Guide.md) for full verification details.
 
-> **WARNING:** Never deploy the hardened build to students. Never add a runtime switch to convert the vulnerable build to hardened mode.
-
-
----
-
+> [!WARNING]
+> Never deploy the hardened build to students. Never add a runtime switch to convert the vulnerable build to hardened mode.
+---  
+</br>  
 
 ## 7. Where things live
 
@@ -169,12 +159,10 @@ See [`docs/Remediation-Guide.md`](../docs/Remediation-Guide.md) for full verific
 | **Flag (final)** | `/opt/northernbridge/flag.txt` (vulnerable only) | Outside the database. Not present in hardened build. |
 | **DB** | `/var/lib/northernbridge/college.db` | Owned by `www-data`. |
 | **Vagrant config** | `Vagrantfile` | Defines `vulnerable` (primary) and `hardened` (autostart: false). |
-| **Docs** | `docs/` | Findings, remediation, learning objectives, retrospective, sign-off, etc. |
+| **Docs** | `Docs/` | Findings, remediation, learning objectives, retrospective, sign-off, etc. |
 | **Runbooks** | `runbooks/` | This document. |
-
-
----
-
+---  
+</br>  
 
 ## 8. Logs and diagnostics
 
@@ -205,9 +193,8 @@ curl -i http://127.0.0.1/
 | Provision fails mid-way | Check the last lines of syslog. Common causes: package install timeout, git clone issues, or order-of-operations. For hardened, ensure schema exists before admin seeding. |
 | Can't reach via bridged IP | Ensure host firewall isn't blocking. Use NAT IP as fallback. |
 
-
----
-
+---  
+</br>  
 
 ## 9. Updating the lab
 
@@ -221,7 +208,7 @@ If you change any of the following, verify they remain consistent:
 
 | Change | Must update |
 | :-- | :-- |
-| **Routes/filenames** | `docs/learning-objectives.md`, `docs/CTF Design_&_Challenge-Flow.md`, student/instructor guides |
+| **Routes/filenames** | `Docs/learning-objectives.md`, `Docs/CTF Design_&_Challenge-Flow.md`, student/instructor guides |
 | **Seed data (`seed.sql`)** | Be careful not to accidentally fix the intentional flaws. Only change fictional data if explicitly approved by instructor. |
 | **Admin credentials/`.env` pairs (vulnerable)** | Keep them fictional. Never introduce real creds. The vulnerable build's decoy is intentional. |
 | **Flag location/name** | `infra/provision.sh`, guides, and ensure it stays outside the database |
@@ -232,10 +219,8 @@ If you change any of the following, verify they remain consistent:
 - **Never** harden the vulnerable build
 - **Never** add a runtime toggle between vulnerable/hardened
 - Keep changes isolated to the intended scope
-
-
----
-
+---  
+</br>  
 
 ## 10. Handing over
 
@@ -244,8 +229,8 @@ If you change any of the following, verify they remain consistent:
 - **Default build is vulnerable** — that is intentional
 - **Hardened build is verification only** — never for students
 - Use `vagrant destroy -f && vagrant up` to reset between cohorts
-- Testing of both builds is required for full sign-off (see [`docs/final-signoff.md`](../docs/final-signoff.md))
-- Refer to [`docs/retrospective.md`](../docs/retrospective.md) for lessons learned and next-cohort improvements
+- Testing of both builds is required for full sign-off (see [`Docs/Final-Signoff.md`](https://github.com/Incogn1mu5/Northernbridge-College-CTF/blob/29e0778855967dcf5a6a703e0924cb8a05d0164d/Docs/Final-Signoff.md)
+- Refer to [`Docs/Retrospective.md`](https://github.com/Incogn1mu5/Northernbridge-College-CTF/blob/d1dcc4708ae0819855901cd58dd580ba64815a34/Docs/Retrospective.md) for lessons learned and next-cohort improvements
 
 ### What must never be committed
 - Actual flag values
